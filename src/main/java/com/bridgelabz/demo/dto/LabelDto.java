@@ -3,21 +3,24 @@ package com.bridgelabz.demo.dto;
 import javax.validation.constraints.NotEmpty;
 
 public class LabelDto {
-	private int labelId;
+	//private int labelId;
 	@NotEmpty(message = "field required")
 	private String labelName;
 	
-	public LabelDto(int labelId, @NotEmpty(message = "not") String labelName) {
+
+
+	public LabelDto() {
 		super();
-		this.labelId = labelId;
+		// TODO Auto-generated constructor stub
+	}
+	public LabelDto(@NotEmpty(message = "field required") String labelName) {
+		super();
 		this.labelName = labelName;
 	}
-	public int getLabelId() {
-		return labelId;
-	}
-	public void setLabelId(int labelId) {
-		this.labelId = labelId;
-	}
+	/*
+	 * public int getLabelId() { return labelId; } public void setLabelId(int
+	 * labelId) { this.labelId = labelId; }
+	 */
 	public String getLabelName() {
 		return labelName;
 	}
@@ -26,8 +29,9 @@ public class LabelDto {
 	}
 	@Override
 	public String toString() {
-		return "LabelDto [labelId=" + labelId + ", labelName=" + labelName + "]";
+		return "LabelDto [labelName=" + labelName + "]";
 	}
+	
 	
 	
 	

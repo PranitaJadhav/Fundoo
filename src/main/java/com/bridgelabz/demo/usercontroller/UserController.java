@@ -82,15 +82,15 @@ public class UserController {
 
 	
 	  @PostMapping("/forget") 
-	  public Response forgetPassword(@RequestBody LoginDto loginDto,@RequestParam String token) throws UnsupportedEncodingException {
+	  public Response forgetPassword(@RequestBody ForgetPasswordDto forgetpasswordDto) throws UnsupportedEncodingException {
 	  
-	  return userService.forgetPass(loginDto, token);
+	  return userService.forgetPass(forgetpasswordDto);
 	  
 	  }
 	 
 	@PostMapping("/reset")
-	public Response resetPasswor(@RequestBody ResetPasswordDto resetPasswordDto,@RequestParam String token) {
-		return userService.resetPass(resetPasswordDto,token);
+	public Response resetPasswor(@RequestBody ResetPasswordDto resetPasswordDto) {
+		return userService.resetPass(resetPasswordDto);
 		
 		
 	}

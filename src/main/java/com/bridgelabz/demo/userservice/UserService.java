@@ -120,18 +120,18 @@ public class UserService {
 	 
 
 	
-	public Response forgetPass(LoginDto loginDto,String token) throws UnsupportedEncodingException {
+	public Response forgetPass(ForgetPasswordDto forgetPasswordDto) throws UnsupportedEncodingException {
 
-		String tok	=	tokenService.getUserToken(token);
+		//String tok	=	tokenService.getUserToken(token);
 		
-		Optional<UserInfo> userExist = userRepository.findByEmailid(tok);
+		Optional<UserInfo> userExist = userRepository.findByEmailid(forgetPasswordDto.getEmailid());
 		System.out.println("user"+userExist);
 
 
 		if (userExist.isPresent()) {
 			
 			
-			jms.sendMail(loginDto.getEmailid(), tok,"http://localhost:8080/resetPassword");
+			jms.sendMail(forgetPasswordDto.getEmailid(), null,"http://localhost:8080/resetPassword");
 
 			return new Response(200, "Successful", null);
 		} else {
@@ -140,13 +140,15 @@ public class UserService {
 
 	}
 
-	public Response resetPass(ResetPasswordDto resetPasswordDto, String token) {
+	public Response resetPass(ResetPasswordDto resetPasswordDto) {
 		
-		String emailid = tokenService.getUserToken(token);
-		System.out.println(emailid);
+		/*
+		 * String emailid = tokenService.getUserToken(token);
+		 * System.out.println(emailid);
+		 */
 
 		//UserInfo userInfo = modelMapper.map(resetPasswordDto, UserInfo.class);
-		Optional<UserInfo> userExist = userRepository.findByEmailid(emailid);
+		Optional<UserInfo> userExist = userRepository.findByEmailid(resetPasswordDto.getEmailid());
 		
 		
 			if (resetPasswordDto.getPassword().equals(resetPasswordDto.getConfirmPassword())) {

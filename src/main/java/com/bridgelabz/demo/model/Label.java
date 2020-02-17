@@ -1,6 +1,7 @@
 package com.bridgelabz.demo.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -38,21 +39,39 @@ public class Label {
 
 	@ManyToMany
 	
-	/*
-	 * @JoinTable( name = "Label_Notes", joinColumns = @JoinColumn(name =
-	 * "labelid"), inverseJoinColumns = @JoinColumn(name = "nid"))
-	 */
+	
+	  @JoinTable 
+	  (name = "Label_Notes_join", joinColumns = @JoinColumn (name ="labelid"), 
+	  inverseJoinColumns = @JoinColumn(name = "nid"))
 	 
-	  private List<Notes> labelNotes;
+	 
+	private List<Notes> listofNotes = new ArrayList<Notes>();
+	  //private List<Notes> labelNotes;
+
+	
+
+	
 
 	public Label() {
 		super();
+		// TODO Auto-generated constructor stub
 	}
 
+
+	public Label(int labelId, LocalDateTime createlabel_time, LocalDateTime modified_time,
+			@NotEmpty(message = "field required") String label_name, UserInfo user, List<Notes> listofNotes) {
+		super();
+		this.labelId = labelId;
+		this.createlabel_time = createlabel_time;
+		this.modified_time = modified_time;
+		this.label_name = label_name;
+		this.user = user;
+		this.listofNotes = listofNotes;
+	}
 	public int getLabelId() {
 		return labelId;
 	}
-
+	
 	public void setLabelId(int labelId) {
 		this.labelId = labelId;
 	}
@@ -89,20 +108,27 @@ public class Label {
 		this.user = user;
 	}
 
-	public List<Notes> getNotes() {
-		return labelNotes;
+	public List<Notes> getListofNotes() {
+		return listofNotes;
 	}
 
-	public void setNotes(List<Notes> notes) {
-		this.labelNotes = notes;
+	public void setListofNotes(List<Notes> listofNotes) {
+		this.listofNotes = listofNotes;
 	}
+
 
 	@Override
 	public String toString() {
 		return "Label [labelId=" + labelId + ", createlabel_time=" + createlabel_time + ", modified_time="
-				+ modified_time + ", label_name=" + label_name + ", user=" + user + ", labelNotes=" + labelNotes + "]";
+				+ modified_time + ", label_name=" + label_name + ", user=" + user + ", listofNotes=" + listofNotes
+				+ "]";
 	}
 
+
+
+	
+
+	
 	
 	
 	

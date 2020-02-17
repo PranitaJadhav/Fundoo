@@ -3,6 +3,7 @@ package com.bridgelabz.demo.notecontroller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,20 +32,34 @@ public class LabelController {
 		
 	}
 	@GetMapping("/getAllLabel")
-	public List<Label> getAllLabels(@RequestParam String token) {
+	public List<Label> getAllLabels(@RequestHeader String token) {
 		return labelService.getAllLabels(token);
 		
 	}
-	
-	public Response deleteLabel() {
-		return null;
+	@DeleteMapping("/deleteNote")
+	public Response deleteLabel(@RequestHeader String token, @RequestParam int id) {
+		labelService.deleteLabel(token,id);
+		return new Response(200, "Deleted", null);
 		
 	}
-	@PostMapping("/addNoteToLabel")
-	public Response addNoteToLabe(@RequestHeader String token, @RequestParam int nid,@RequestParam int labelid) {
+	@PostMapping("/addLabelToNote")
+	public Response addLabelToNote(@RequestHeader String token, @RequestParam int nid,@RequestParam int labelid) {
 		labelService.addLabelToNote(token,nid,labelid);
 		return new Response(200, "added", null);
 		
+		
+	}
+	@PostMapping("/addNoteToLabel")
+	public Response addNoteToLabel(@RequestHeader String token, @RequestParam int nid,@RequestParam int labelid) {
+		labelService.addNoteToLabel(token,nid,labelid);
+		return new Response(200, "added", null);
+		
+		
+	}
+	@PostMapping("/updatelabel")
+	public Response updateLabel(@RequestHeader String token, @RequestParam int labelId,@RequestBody LabelDto labelDto) {
+		labelService.updateLabel(token,labelId,labelDto);
+		return new Response(200, "added", null);
 		
 	}
 }

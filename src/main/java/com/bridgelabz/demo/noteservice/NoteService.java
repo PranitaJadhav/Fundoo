@@ -71,7 +71,7 @@ public class NoteService {
 		Optional<UserInfo> user = userRepository.findByEmailid(token);
 		System.out.println(id);
 	
-		Optional<Notes> note	=	notesRepository.findById(id);
+		Optional<Notes> note	=	notesRepository.findByNid(id);
 
 		
 		if(user.isPresent()) {
@@ -93,7 +93,7 @@ public class NoteService {
 	
 	public void updateNote(NotesDto noteDto, int id, String token) {
 		System.out.println(token);
-		Optional<Notes> note	=	notesRepository.findById(id);
+		Optional<Notes> note	=	notesRepository.findByNid(id);
 		System.out.println(note);
 		Optional<UserInfo> user = userRepository.findByEmailid(token);
 		if(user.isPresent()) {

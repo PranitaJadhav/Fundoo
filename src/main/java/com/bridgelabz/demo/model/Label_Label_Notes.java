@@ -9,8 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 //@Entity
-@Embeddable
-@Table(name = "label_label_notes")
+//@Embeddable
+//@Table(name = "label_label_notes")
 
 public class Label_Label_Notes implements Serializable{
 	@Id

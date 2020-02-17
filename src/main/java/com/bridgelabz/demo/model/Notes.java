@@ -1,6 +1,7 @@
 package com.bridgelabz.demo.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -9,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -36,15 +38,32 @@ public class Notes implements Serializable {
 	@JoinColumn(name = "user_id")
 	private UserInfo user;
 
-	@ManyToMany(mappedBy = "labelNotes")
-	private List<Label> notesLabel;
+	@ManyToMany
+	@JoinTable ( name = "Label_Notes_join", joinColumns = @JoinColumn (name
+			  ="nid"), inverseJoinColumns = @JoinColumn(name = "labelid"))
+	private List<Label> listLabel = new ArrayList<Label>();
+	//private List<Label> notesLabel;
 
-	public Notes() {
-		super();
-	}
+	
 
 	public int getNid() {
 		return nid;
+	}
+	
+
+	public Notes() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
+	public Notes(int nid, @NotBlank String title, @NotNull String description, UserInfo user, List<Label> listLabel) {
+		super();
+		this.nid = nid;
+		this.title = title;
+		this.description = description;
+		this.user = user;
+		this.listLabel = listLabel;
 	}
 
 	public void setNid(int nid) {
@@ -75,19 +94,26 @@ public class Notes implements Serializable {
 		this.user = user;
 	}
 
-	public List<Label> getLabel() {
-		return notesLabel;
+	public List<Label> getListLabel() {
+		return listLabel;
 	}
 
-	public void setLabel(List<Label> label) {
-		this.notesLabel = label;
+	public void setListLabel(List<Label> listLabel) {
+		this.listLabel = listLabel;
 	}
+
 
 	@Override
 	public String toString() {
 		return "Notes [nid=" + nid + ", title=" + title + ", description=" + description + ", user=" + user
-				+ ", like_notes=" + notesLabel + "]";
+				+ ", listLabel=" + listLabel + "]";
 	}
+
+	
+
+	
+
+	
 	
 
 }

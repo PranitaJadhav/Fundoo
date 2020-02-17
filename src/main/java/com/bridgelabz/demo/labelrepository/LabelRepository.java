@@ -4,16 +4,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-
 import com.bridgelabz.demo.model.Label;
-import com.bridgelabz.demo.model.Note_Label;
-import com.bridgelabz.demo.model.Notes;
 
 
-public interface LabelRepository extends CrudRepository<Label, Integer>{
-	Optional<Label> findByUserId(int id);
+public interface LabelRepository extends JpaRepository<Label, Integer>{
+	//Optional<Label> findByUserId(int id);
+	Optional<Label> findByLabelId(int id);
+	List<Label> findByUserId(int id);
+	
+	//List<Label> findByLabelId(int id);
 
 
 	 
