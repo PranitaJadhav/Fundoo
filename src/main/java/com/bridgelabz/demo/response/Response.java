@@ -12,8 +12,17 @@ public class Response {
 		this.result = result;
 	}
 
-	public String getStatus() {
-		return message;
+	public Object getResult() {
+		return result;
 
 	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	
+
+	
+	
 }

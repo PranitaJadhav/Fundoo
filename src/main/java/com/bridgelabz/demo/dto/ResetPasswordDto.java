@@ -1,9 +1,14 @@
 package com.bridgelabz.demo.dto;
 
 public class ResetPasswordDto {
+
 	private String emailid;
 	private String password;
 	private String confirmPassword;
+	
+	
+
+	
 
 	public String getEmailid() {
 		return emailid;

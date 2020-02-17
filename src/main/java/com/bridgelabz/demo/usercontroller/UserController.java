@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.demo.dto.ForgetPasswordDto;
@@ -43,9 +44,9 @@ public class UserController {
 
 	//@GetMapping("/get")
 	@RequestMapping(method = RequestMethod.GET, value = "/get")
-	public List<UserInfo> getUser() {
+	public List<UserInfo> getUser(@RequestParam String token) {
 		System.out.println("Hii");
-		return userService.getAll();
+		return userService.getAll(token);
 
 	}
 
@@ -62,41 +63,37 @@ public class UserController {
 
 	}
 
-	@PutMapping("/update/{id}")
-	public String update(@PathVariable int id, UserDto user) {
-		userService.updateUser(id, user);
-		return "Updated";
+	
+	  @PutMapping("/update")
+	  public String update(@RequestBody UserDto userDto,@RequestParam String token) {
+		  userService.updateUser(userDto,token); 
+		  return "Updated";
+	  
+	  }
+	 
 
-	}
+	
+	  @PostMapping("/login") 
+	  public Response login(@RequestBody LoginDto logindto) throws UnsupportedEncodingException {
+	  return userService.login(logindto);
+	  
+	  }
+	 
 
-	@PostMapping("/login")
-	public Response login(@RequestBody LoginDto logindto) throws UnsupportedEncodingException {
-		return userService.login(logindto);
-
-	}
-
-	/*
-	 * @PostMapping("/forget") public Response forgetPassword(@RequestBody
-	 * ForgetPasswordDto forgetPassword) throws UnsupportedEncodingException {
-	 * 
-	 * return userService.forgetPass(forgetPassword);
-	 * 
-	 * }
-	 */
+	
+	  @PostMapping("/forget") 
+	  public Response forgetPassword(@RequestBody LoginDto loginDto,@RequestParam String token) throws UnsupportedEncodingException {
+	  
+	  return userService.forgetPass(loginDto, token);
+	  
+	  }
+	 
 	@PostMapping("/reset")
-	public Response resetPasswor(@RequestBody ResetPasswordDto resetPasswordDto) {
-		return userService.resetPass(resetPasswordDto);
+	public Response resetPasswor(@RequestBody ResetPasswordDto resetPasswordDto,@RequestParam String token) {
+		return userService.resetPass(resetPasswordDto,token);
 		
 		
 	}
-
-
-
-
-
-
-
-
 
 }
 

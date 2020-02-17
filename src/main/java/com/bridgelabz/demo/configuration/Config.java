@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.bridgelabz.demo.model.Notes;
 import com.bridgelabz.demo.model.UserInfo;
 
 @Configuration
@@ -23,5 +24,11 @@ public class Config {
 		return new UserInfo();
 
 	}
+	@Bean
+	public Notes getNotes() {
+		return new Notes();
+
+	}
+	 
 	 
 }

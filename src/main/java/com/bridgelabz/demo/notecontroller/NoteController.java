@@ -1,15 +1,21 @@
 package com.bridgelabz.demo.notecontroller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.demo.dto.NotesDto;
+import com.bridgelabz.demo.model.Notes;
 import com.bridgelabz.demo.model.UserInfo;
 import com.bridgelabz.demo.noteservice.NoteService;
 import com.bridgelabz.demo.response.Response;
@@ -30,14 +36,43 @@ public class NoteController {
 	UserInfo userInfo;
 	
 	@Autowired
-	TokenService token;
+	private TokenService tokenService;
 	
 	@PostMapping("/create")
-	public Response add(@RequestBody NotesDto notesDto,@RequestBody String tok) throws UnsupportedEncodingException {
-		String t	=	token.decodetoken(tok);
-		//String t = token.decodetoken(token);
-		return noteService.createNote(notesDto,t);
+	public Response add(@RequestBody NotesDto notesDto,@RequestParam String token) throws UnsupportedEncodingException {
+		System.out.println(token);
+		
+		String t	=	tokenService.getUserToken(token);
+		System.out.println("t  "+t);
+		 noteService.createNote(notesDto,t);
+			return new Response(200, "Note created", null);
 		
 	}
 	
+	@DeleteMapping("/delete")
+	public Response deleteById(@RequestBody int nid,@RequestParam String token) {
+		String t	=	tokenService.getUserToken(token);
+
+		noteService.deleteNoteByid(nid, t);
+
+		return new Response(200, "Deleted", null);
+
+	}
+	@GetMapping("/getAllNotes")
+	public List<Notes> getAll(@RequestParam String token)
+
+	{			String emailid	=	tokenService.getUserToken(token);
+
+		return noteService.getAll(emailid);
+	}
+	@PutMapping("/updateNote")
+	public Response updateNote(@RequestBody NotesDto noteDto,@RequestHeader int id,@RequestParam String token) {
+		String t	=	tokenService.getUserToken(token);
+ 
+		noteService.updateNote(noteDto,id,t);
+		
+		return new Response(200, "Updated", null);
+		
+		
+	}
 }

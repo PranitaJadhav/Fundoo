@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -19,24 +20,31 @@ public class UserInfo implements Serializable{
 	
 
 	@Id
+	//@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
 	
-	private int id;
+	private int  id;
+	
 	@Column(name = "name")
-
+	@NotNull
 	private String name;
 	
 	@Column(name = "emailid")
+	@NotNull
 	private String emailid;
 
 	@Column(name = "mobile_no")
+	@NotNull
 	private String mobileNo;
 
 	@Column(name = "password")
+	@NotNull
 	private String password;
 
 	@Column(name = "confirm_password")
+	@NotNull
 	private String confirmPassword;
+	
 
 	
 	

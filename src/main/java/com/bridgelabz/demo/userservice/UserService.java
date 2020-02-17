@@ -4,6 +4,7 @@ package com.bridgelabz.demo.userservice;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class UserService {
 	ModelMapper modelMapper;
 
 	@Autowired
-	TokenService token;
+	TokenService tokenService;
 
 	@Autowired
 	JMS jms;
@@ -36,37 +37,46 @@ public class UserService {
 	List<UserInfo> user = new ArrayList<UserInfo>();
 
 	public Response addUser(UserDto userdto) throws UnsupportedEncodingException {
-		System.out.println("hey");
+		System.out.println("hey3");
+		
 											//source	destination
 		UserInfo userInfo = modelMapper.map(userdto, UserInfo.class);
-		System.out.println("hey1");
 
-		UserInfo userExist = userRepository.findByEmailid(userdto.getEmailid());
-		if (!(userExist == null)) {
+		Optional<UserInfo> userExist = userRepository.findByEmailid(userdto.getEmailid());
+		if (userExist.isPresent() ) {
 			return new Response(200, "User Exist", null);
 
 		}
 
 		else if (userdto.getPassword().equals(userdto.getConfirmPassword())) {
-			String userToken;
 
-			userToken = token.createToken(userdto.getEmailid());
-			jms.sendMail(userdto.getEmailid(), userToken);
+			String message	=	"Registered Successfully";
+			System.out.println(message);
+			jms.sendMail(userdto.getEmailid(), message,null);
 			
 			
 			userRepository.save(userInfo);
 			
 
 		}
+		
 
 		return new Response(500, "Unkonwn Error", null);
 
 	}
 
-	public List<UserInfo> getAll() {
+	public List<UserInfo> getAll(String token) {
+		String tok	=	tokenService.getUserToken(token);
+		Optional<UserInfo> userExist = userRepository.findByEmailid(tok);
+
+		if (!userExist.isPresent()) {
+			throw new RuntimeException("User doesnt exist");
+		}
+		else {
 		List<UserInfo> user = new ArrayList<UserInfo>();
 		userRepository.findAll().forEach(user::add);
 		return user;
+		}
 
 	}
 
@@ -80,69 +90,73 @@ public class UserService {
 
 	}
 
-	public void updateUser(int id, UserDto userdto) {
-		UserInfo userInfo = modelMapper.map(userdto, UserInfo.class);
 
-		for (int i = 0; i < user.size(); i++) {
-			UserInfo t = user.get(i);
-			if (t.getId() == id) {
-				user.set(i, userInfo);
 
-				// return "Updated";
+	
+	public Response login(LoginDto logindto) throws UnsupportedEncodingException { // UserInfo userInfo = //
+																					// modelMapper.map(logindto, //
+																					// UserInfo.class);
+		Optional<UserInfo> user = userRepository.findByEmailid(logindto.getEmailid());
+		
+		System.out.println("user"+user);
 
-			}
-
-		}
-
-	}
-
-	public Response login(LoginDto logindto) throws UnsupportedEncodingException {
-		// UserInfo userInfo = modelMapper.map(logindto, UserInfo.class);
-		UserInfo user = userRepository.findByEmailid(logindto.getEmailid());
-
-		// user contain the either email id which is present in db and if email
-		// not matches then it will contain null
-		if (user == null) {
+		if (!user.isPresent()) {
 			throw new RuntimeException("User doesnt exist");
 		}
-		if (!user.getPassword().equals(logindto.getPassword())) {
+		if (!user.get().getPassword().equals(logindto.getPassword())) {
 
 			throw new RuntimeException("Password mismatch");
 
 		}
-		String userToken = token.createToken(logindto.getEmailid());
+		String userToken = tokenService.createToken(user.get().getEmailid());
 		System.out.println(userToken);
+		jms.sendMail(logindto.getEmailid(), userToken,"welcome");
+		
+
+		return new Response(200, "Login Successfull", userToken);
+
+	}
+	 
+	 
+
+	
+	public Response forgetPass(LoginDto loginDto,String token) throws UnsupportedEncodingException {
+
+		String tok	=	tokenService.getUserToken(token);
+		
+		Optional<UserInfo> userExist = userRepository.findByEmailid(tok);
+		System.out.println("user"+userExist);
 
 
-		return new Response(200, "Login Successfull", null);
+		if (userExist.isPresent()) {
+			
+			
+			jms.sendMail(loginDto.getEmailid(), tok,"http://localhost:8080/resetPassword");
+
+			return new Response(200, "Successful", null);
+		} else {
+			return new Response(200, "USerDoesnt exist", null);
+		}
 
 	}
 
-	/*
-	 * public Response forgetPass(ForgetPasswordDto forgetPasswordDto) throws
-	 * UnsupportedEncodingException {
-	 * 
-	 * UserInfo userExist =
-	 * userRepository.findByEmailid(forgetPasswordDto.getEmailid()); if (!(userExist
-	 * == null)) {
-	 * 
-	 * String forgetToken = token.createToken(forgetPasswordDto.getEmailid());
-	 * jms.sendMail(forgetPasswordDto.getEmailid(), forgetToken); return new
-	 * Response(200, "Successful", null); } else { return new Response(200,
-	 * "USerDoesnt exist", null); }
-	 */
+	public Response resetPass(ResetPasswordDto resetPasswordDto, String token) {
+		
+		String emailid = tokenService.getUserToken(token);
+		System.out.println(emailid);
 
-	//}
-
-	public Response resetPass(ResetPasswordDto resetPasswordDto) {
-		UserInfo userInfo = modelMapper.map(resetPasswordDto, UserInfo.class);
-		UserInfo userExist = userRepository.findByEmailid(resetPasswordDto.getEmailid());
-		if (!(userExist == null)) {
+		//UserInfo userInfo = modelMapper.map(resetPasswordDto, UserInfo.class);
+		Optional<UserInfo> userExist = userRepository.findByEmailid(emailid);
+		
+		
 			if (resetPasswordDto.getPassword().equals(resetPasswordDto.getConfirmPassword())) {
-				userRepository.save(userInfo);
+				userExist.get().setPassword(resetPasswordDto.getPassword());
+				userExist.get().setConfirmPassword(resetPasswordDto.getPassword());
+
+				userRepository.save(userExist.get());
 				return new Response(200, "Successful", null);
 			}
-		}
+		
 
 		else if (userExist == null) {
 			throw new RuntimeException("Password mismatch");
@@ -151,6 +165,18 @@ public class UserService {
 
 		return new Response(500, "Password mismatch", "null");
 
+	}
+
+	public void updateUser( UserDto userDto,String token) {
+		String emailid = tokenService.getUserToken(token);
+		Optional<UserInfo> user	=	userRepository.findByEmailid(emailid);
+		if(user.isPresent()) {
+			user.get().setMobileNo(userDto.getMobileNo());
+			user.get().setName(userDto.getName());
+			userRepository.save(user.get());
+		}
+
+		
 	}
 
 }
