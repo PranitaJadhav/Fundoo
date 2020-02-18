@@ -1,6 +1,7 @@
 package com.bridgelabz.demo.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +31,29 @@ public class Notes implements Serializable {
 	@Column(name = "title")
 	private String title;
 
-	@NotNull
+	
 	@Column(name = "description")
 	private String description;
+	
+	@Column(name = "createlabel_time")
+	private LocalDateTime createlabel_time;
+
+	@Column(name = "modified_time")
+	private LocalDateTime modified_time;
+	
+	@NotNull
+	@Column(name = "trash")
+	private boolean isTrash;
+	
+	@NotNull
+	@Column(name = "pin")
+	private boolean isPin;
+	
+		@NotNull
+	  @Column(name = "archive") 
+	  private boolean isArchive;
+	 
+	
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -44,26 +65,15 @@ public class Notes implements Serializable {
 	private List<Label> listLabel = new ArrayList<Label>();
 	//private List<Label> notesLabel;
 
+	public Notes() {
+		super();
+	}
+
 	
+
 
 	public int getNid() {
 		return nid;
-	}
-	
-
-	public Notes() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-
-	public Notes(int nid, @NotBlank String title, @NotNull String description, UserInfo user, List<Label> listLabel) {
-		super();
-		this.nid = nid;
-		this.title = title;
-		this.description = description;
-		this.user = user;
-		this.listLabel = listLabel;
 	}
 
 	public void setNid(int nid) {
@@ -86,6 +96,44 @@ public class Notes implements Serializable {
 		this.description = description;
 	}
 
+	public LocalDateTime getCreatelabel_time() {
+		return createlabel_time;
+	}
+
+	public void setCreatelabel_time(LocalDateTime createlabel_time) {
+		this.createlabel_time = createlabel_time;
+	}
+
+	public LocalDateTime getModified_time() {
+		return modified_time;
+	}
+
+	public void setModified_time(LocalDateTime modified_time) {
+		this.modified_time = modified_time;
+	}
+
+	public boolean isTrash() {
+		return isTrash;
+	}
+
+	public void setTrash(boolean isTrash) {
+		this.isTrash = isTrash;
+	}
+
+	public boolean isPin() {
+		return isPin;
+	}
+
+	public void setPin(boolean isPin) {
+		this.isPin = isPin;
+	}
+
+	
+	  public boolean isArchive() { return isArchive; }
+	  
+	  public void setArchive(boolean isArchive) { this.isArchive = isArchive; }
+	 
+
 	public UserInfo getUser() {
 		return user;
 	}
@@ -103,17 +151,17 @@ public class Notes implements Serializable {
 	}
 
 
+
+
 	@Override
 	public String toString() {
-		return "Notes [nid=" + nid + ", title=" + title + ", description=" + description + ", user=" + user
-				+ ", listLabel=" + listLabel + "]";
+		return "Notes [nid=" + nid + ", title=" + title + ", description=" + description + ", createlabel_time="
+				+ createlabel_time + ", modified_time=" + modified_time + ", isTrash=" + isTrash + ", isPin=" + isPin
+				+ ", isArchive=" + isArchive + ", user=" + user + ", listLabel=" + listLabel + "]";
 	}
 
-	
-
-	
 
 	
 	
-
+	
 }

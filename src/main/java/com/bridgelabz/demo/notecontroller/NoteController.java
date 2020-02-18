@@ -75,4 +75,52 @@ public class NoteController {
 		
 		
 	}
+	@PutMapping("/trashDelete")
+	public Response trashNote(@RequestParam int nid,@RequestParam String token) {
+		System.out.println(nid);
+		String emailId	=	tokenService.getUserToken(token);
+
+		noteService.trashNote(nid, emailId);
+
+		return new Response(200, "Trashed", null);
+
+	}
+	
+	@DeleteMapping("/deleteTrash")
+	public Response deleteTrash(@RequestParam int nid,@RequestParam String token) {
+		String emailid	=	tokenService.getUserToken(token);
+
+		noteService.deleteTrash(nid, emailid);
+
+		return new Response(200, "Deleted", null);
+
+	}
+	@PutMapping("/pin")
+	public Response isPinUnpin(@RequestParam int nid,@RequestParam String token) {
+		System.out.println(nid);
+		String emailId	=	tokenService.getUserToken(token);
+
+		noteService.isPinUnpin(nid, emailId);
+
+		return new Response(200, "successfull", null);
+
+	}
+	@PutMapping("/archive")
+	public Response isArchive(@RequestParam int nid,@RequestParam String token) {
+		System.out.println(nid);
+		String emailId	=	tokenService.getUserToken(token);
+
+		noteService.isArchive(nid, emailId);
+
+		return new Response(200, "successfull", null);
+
+	}
+	@GetMapping("/getArchivesNotes")
+	public List<Notes> getArchivesNotes(@RequestParam String token)
+
+	{			String emailid	=	tokenService.getUserToken(token);
+
+		return noteService.getArchivesNotes(emailid);
+	}
+	
 }

@@ -20,6 +20,7 @@ public class JMS {
 		System.out.println(mail.getFrom());
 		System.out.println(mail.getSubject());
 		System.out.println(mail.getTo());
+		
 
 		javaMailsender.send(mail);
 	}

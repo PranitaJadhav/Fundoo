@@ -1,8 +1,10 @@
 package com.bridgelabz.demo.noteservice;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,7 @@ public class NoteService {
 				Optional<UserInfo> user = userRepository.findByEmailid(token);
 
 				notes.setUser(user.get());
+				notes.setCreatelabel_time(LocalDateTime.now());
 				notesRepository.save(notes);
 				return new Response(200, "note created", null);
 			}
@@ -83,10 +86,14 @@ public class NoteService {
 	}
 	public List<Notes> getAll(String token) {
 		Optional<UserInfo> userExist = userRepository.findByEmailid(token);
+		int id	=	userExist.get().getId();
+		List<Notes> noteList	=	notesRepository.findAll();
+		List<Notes> noteList2	=	noteList.stream().filter(i -> (i.getUser().getEmailid()).equals((token))).collect(Collectors.toList());
 		if(!userExist.isPresent())
 			throw new ValueFoundNull("User Doesnt exist");
 		else
-		return notesRepository.findAll();
+			System.out.println("hey  "+noteList2.toString());
+		return noteList2;
 		
 
 	}
@@ -94,18 +101,154 @@ public class NoteService {
 	public void updateNote(NotesDto noteDto, int id, String token) {
 		System.out.println(token);
 		Optional<Notes> note	=	notesRepository.findByNid(id);
-		System.out.println(note);
+		System.out.println(note.get());
 		Optional<UserInfo> user = userRepository.findByEmailid(token);
-		if(user.isPresent()) {
-			if(note.isPresent()) {
+		
+		  if(user.isPresent()) { if(note.isPresent()) {
+		 
 			note.get().setTitle(noteDto.getTitle());
 			note.get().setDescription(noteDto.getDescription());
+			note.get().setModified_time(LocalDateTime.now());
 			notesRepository.save(note.get());
 
 			}
 		}
 
 		
+		
 	}
+	
+	public void trashNote(int id, String emailId) {
+		System.out.println(emailId);
+		Optional<Notes> note	=	notesRepository.findByNid(id);
+		Optional<UserInfo> user = userRepository.findByEmailid(emailId);
+		
+		
+		  if(!user.isPresent()) { 
+			  throw new ValueFoundNull(environment.getProperty("null value found"));
+		  
+		  } else if (!note.isPresent()) { 
+			  throw new ValueFoundNull(environment.getProperty("null value found"));
+		  
+		  }
+		
+		  else {
+			  if(note.get().isPin()) {
+				  note.get().setPin(false);
+
+			  }
+		 
+			note.get().setTrash(true);
+			note.get().setModified_time(LocalDateTime.now());
+			notesRepository.save(note.get());
+			
+		}
+		
+	}
+
+	public void deleteTrash(int nid, String emailid) {
+		Optional<Notes> note	=	notesRepository.findByNid(nid);
+		System.out.println(note);
+		Optional<UserInfo> user = userRepository.findByEmailid(emailid);
+
+		if(!user.isPresent()) {
+			throw new ValueFoundNull(environment.getProperty("null value found"));
+
+		}
+		else if (!note.isPresent()) {
+			throw new ValueFoundNull(environment.getProperty("null value found"));
+
+		}
+		else if (!note.get().isTrash()) {
+			throw new ValueFoundNull(environment.getProperty("Not present in trash"));
+
+			
+		}
+		else {
+			notesRepository.delete(note.get());
+			notesRepository.save(note.get());
+			
+		}
+			
+		
+	}
+
+
+
+	public void isPinUnpin(int nid, String emailId) {
+		Optional<Notes> note	=	notesRepository.findByNid(nid);
+		System.out.println(note);
+		Optional<UserInfo> user = userRepository.findByEmailid(emailId);
+
+		if(!user.isPresent()) {
+			throw new ValueFoundNull(environment.getProperty("null value found"));
+
+		}
+		else if (!note.isPresent()) {
+			throw new ValueFoundNull(environment.getProperty("null value found"));
+
+		}
+		else {
+			System.out.println(note.get().isPin());
+			
+			if(note.get().isPin()) {
+				note.get().setPin(false);
+				notesRepository.save(note.get());
+			}
+			else {
+				
+				note.get().setPin(true);
+				notesRepository.save(note.get());
+			}
+		}
+		
+	}
+
+
+
+	public String isArchive(int nid, String emailId) {
+		
+		Optional<Notes> note	=	notesRepository.findByNid(nid);
+		System.out.println(note);
+		Optional<UserInfo> user = userRepository.findByEmailid(emailId);
+
+		if(!user.isPresent()) {
+			throw new ValueFoundNull(environment.getProperty("null value found"));
+
+		}
+		if (!note.isPresent()) {
+			throw new ValueFoundNull(environment.getProperty("null value found"));
+
+		}
+		if(note.get().isPin()){
+			
+			
+				note.get().setPin(false);
+
+				note.get().setArchive(true);
+				notesRepository.save(note.get());
+			}
+			
+			else {
+				
+				note.get().setArchive(false);
+				notesRepository.save(note.get());
+
+			}
+		
+		return "done";
+		}
+		
+	
+
+
+
+	public List<Notes> getArchivesNotes(String emailid) {
+		
+		return null;
+	}
+	
+	
+	
 
 }
