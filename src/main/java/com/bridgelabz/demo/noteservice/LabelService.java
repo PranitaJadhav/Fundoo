@@ -41,7 +41,6 @@ public class LabelService implements LabelInterface {
 	@Override
 	public String createLabel( LabelDto labelDto, String token) {
 		String t	=	tokenService.getUserToken(token);
-		System.out.println("t  "+t);
 		Label label	=	modelMapper.map(labelDto, Label.class);
 		Optional<UserInfo> user = userRepository.findByEmailid(t);
 		if(!user.isPresent()) {
@@ -76,12 +75,8 @@ public class LabelService implements LabelInterface {
 		System.out.println(UserEmailid);
 		Optional<UserInfo> userExist	=	userRepository.findByEmailid(UserEmailid);
 		int id	=	userExist.get().getId();
-		System.out.println("id"+id);
 		Optional<Notes> noteExist	=	noteRepository.findByNid(noteId);
 		Optional<Label> labelExist	=	labelRepository.findByLabelId(labelId);
-		System.out.println(noteExist);
-		System.out.println("hey");
-		System.out.println(labelExist);
 		if(!userExist.isPresent()) {
 			
 			throw new RuntimeException("User doesnt exist");
@@ -119,17 +114,9 @@ public class LabelService implements LabelInterface {
 		System.out.println(UserEmailid);
 		Optional<UserInfo> userExist	=	userRepository.findByEmailid(UserEmailid);
 		int id	=	userExist.get().getId();
-		System.out.println("id"+id);
-		System.out.println(noteId);
-		System.out.println("note"+noteRepository.findByNid(noteId));
 		Optional<Notes> noteExist	=	noteRepository.findByNid(noteId);
 	
-		System.out.println("hey2");
 		Optional<Label> labelExist	=	labelRepository.findByLabelId(labelId);
-		System.out.println("hey3");
-		System.out.println(noteExist.get());
-		System.out.println("hey");
-		System.out.println(labelExist.get());
 		
 		if(!userExist.isPresent()) {
 			
@@ -182,7 +169,6 @@ public class LabelService implements LabelInterface {
 			else {
 				
 				labelExist.get().setLabelName(labelDto.getLabelName());
-				System.out.println("hey");
 				labelExist.get().setModifiedTime(LocalDateTime.now());
 				labelRepository.save(labelExist.get());
 			}
@@ -190,13 +176,9 @@ public class LabelService implements LabelInterface {
 
 	public void deleteLabel(String token, int id) {
 		String UserEmailid	=	tokenService.getUserToken(token);
-		System.out.println(UserEmailid);
 		Optional<UserInfo> userExist	=	userRepository.findByEmailid(UserEmailid);
-		System.out.println(userExist);
-		System.out.println(id);
 		Optional<Label> labelExist	=	labelRepository.findByLabelId(id);
 
-		System.out.println("label"+labelExist);
 
 			if(!userExist.isPresent()) {
 				throw new ValueFoundNull("user not found");

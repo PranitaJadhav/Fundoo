@@ -31,6 +31,7 @@ public class UserInfo implements Serializable{
 	
 	@Column(name = "emailid")
 	@NotNull
+	@Email(message = "Enter valid emailId")
 	private String emailid;
 
 	@Column(name = "mobile_no")

@@ -18,6 +18,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "Notes")
 
@@ -62,6 +64,7 @@ public class Notes implements Serializable {
 	@ManyToMany
 	@JoinTable ( name = "Label_Notes_join", joinColumns = @JoinColumn (name
 			  ="nid"), inverseJoinColumns = @JoinColumn(name = "labelid"))
+	@JsonIgnoreProperties(value = "listofNotes")
 	private List<Label> listLabel = new ArrayList<Label>();
 	//private List<Label> notesLabel;
 

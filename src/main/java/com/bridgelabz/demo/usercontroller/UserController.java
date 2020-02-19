@@ -42,7 +42,7 @@ public class UserController {
 		return "added";
 	}
 
-	//@GetMapping("/get")
+	@GetMapping("/get")
 	@RequestMapping(method = RequestMethod.GET, value = "/get")
 	public List<UserInfo> getUser(@RequestParam String token) {
 		System.out.println("Hii");

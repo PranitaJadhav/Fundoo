@@ -14,9 +14,10 @@ public class Config {
 		return new ModelMapper();
 	}
 	
+	
 	/*
-	 * @Bean public BCryptPasswordEncoder name() { BCryptPasswordEncoder
-	 * passwordEncoder = new BCryptPasswordEncoder(); return passwordEncoder; }
+	 * @Bean public BCryptPasswordEncoder name() { return new
+	 * BCryptPasswordEncoder(); }
 	 */
 	  
 	@Bean

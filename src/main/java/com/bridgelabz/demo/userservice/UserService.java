@@ -33,6 +33,8 @@ public class UserService {
 
 	@Autowired
 	JMS jms;
+	//@Autowired
+	//BCryptPasswordEncoder bycryptPasswordEncoder;
 
 	List<UserInfo> user = new ArrayList<UserInfo>();
 
@@ -41,18 +43,23 @@ public class UserService {
 		
 											//source	destination
 		UserInfo userInfo = modelMapper.map(userdto, UserInfo.class);
-
 		Optional<UserInfo> userExist = userRepository.findByEmailid(userdto.getEmailid());
+
+		System.out.println(userExist.toString());
+
 		if (userExist.isPresent() ) {
 			return new Response(200, "User Exist", null);
 
 		}
 
 		else if (userdto.getPassword().equals(userdto.getConfirmPassword())) {
+			
+			//userInfo.setPassword(bycryptPasswordEncoder.encode(userdto.getPassword()));
+
 
 			String message	=	"Registered Successfully";
 			System.out.println(message);
-			jms.sendMail(userdto.getEmailid(), message,null);
+			jms.sendMail(userdto.getEmailid(), null,message);
 			
 			
 			userRepository.save(userInfo);

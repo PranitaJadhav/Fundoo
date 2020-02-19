@@ -75,7 +75,7 @@ public class NoteController {
 		
 		
 	}
-	@PutMapping("/trashDelete")
+	@PutMapping("/trash")
 	public Response trashNote(@RequestParam int nid,@RequestParam String token) {
 		System.out.println(nid);
 		String emailId	=	tokenService.getUserToken(token);
@@ -85,7 +85,24 @@ public class NoteController {
 		return new Response(200, "Trashed", null);
 
 	}
+	@PutMapping("/unTrash")
+	public Response unTrashNote(@RequestParam int nid,@RequestParam String token) {
+		System.out.println(nid);
+		String emailId	=	tokenService.getUserToken(token);
+
+		noteService.unTrashNote(nid, emailId);
+
+		return new Response(200, "UnTrashed", null);
+
+	}
 	
+	@GetMapping("/getTrash")
+	public List<Notes> getTrash(@RequestParam String token)
+
+	{			String emailid	=	tokenService.getUserToken(token);
+
+		return noteService.getTrash(emailid);
+	}
 	@DeleteMapping("/deleteTrash")
 	public Response deleteTrash(@RequestParam int nid,@RequestParam String token) {
 		String emailid	=	tokenService.getUserToken(token);
@@ -105,12 +122,29 @@ public class NoteController {
 		return new Response(200, "successfull", null);
 
 	}
+	@GetMapping("/getPin")
+	public List<Notes> getPin(@RequestParam String token)
+
+	{			String emailid	=	tokenService.getUserToken(token);
+
+		return noteService.getPin(emailid);
+	}
 	@PutMapping("/archive")
 	public Response isArchive(@RequestParam int nid,@RequestParam String token) {
 		System.out.println(nid);
 		String emailId	=	tokenService.getUserToken(token);
 
 		noteService.isArchive(nid, emailId);
+
+		return new Response(200, "successfull", null);
+
+	}
+	@PutMapping("/Unarchive")
+	public Response isUnArchive(@RequestParam int nid,@RequestParam String token) {
+		System.out.println(nid);
+		String emailId	=	tokenService.getUserToken(token);
+
+		noteService.isUnArchive(nid, emailId);
 
 		return new Response(200, "successfull", null);
 
