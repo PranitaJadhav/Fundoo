@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bridgelabz.demo.configuration.FundooInterceptor;
 import com.bridgelabz.demo.dto.ForgetPasswordDto;
 import com.bridgelabz.demo.dto.LoginDto;
 import com.bridgelabz.demo.dto.ResetPasswordDto;
@@ -32,6 +33,9 @@ public class UserController {
 	
 	@Autowired
 	UserRepository userrepository;
+	
+	@Autowired
+	FundooInterceptor interceptor;
 	
 
 	@PostMapping("/add")

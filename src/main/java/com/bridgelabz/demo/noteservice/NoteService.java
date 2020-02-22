@@ -12,11 +12,14 @@ import org.springframework.stereotype.Service;
 
 import com.bridgelabz.demo.dto.NotesDto;
 import com.bridgelabz.demo.exception.ValueFoundNull;
+import com.bridgelabz.demo.labelrepository.CollaboratorRepository;
+import com.bridgelabz.demo.model.Collaborator;
 import com.bridgelabz.demo.model.Notes;
 import com.bridgelabz.demo.model.UserInfo;
 import com.bridgelabz.demo.notesrepository.NotesRepository;
 import com.bridgelabz.demo.response.Response;
 import com.bridgelabz.demo.userrepository.UserRepository;
+import com.bridgelabz.demo.utility.JMS;
 import com.bridgelabz.demo.utility.TokenService;
 
 @Service
@@ -40,6 +43,12 @@ public class NoteService {
 	Notes notes;
 	@Autowired
 	Environment environment;
+
+	@Autowired
+	JMS jms;
+
+	@Autowired
+	CollaboratorRepository collaboratorRepository;
 
 	public Response createNote(NotesDto notesDto, String token) {
 
@@ -158,6 +167,7 @@ public class NoteService {
 			notesRepository.save(note.get());
 		}
 	}
+
 	public List<Notes> getTrash(String emailid) {
 		Optional<UserInfo> user = userRepository.findByEmailid(emailid);
 		int id = user.get().getId();
@@ -216,6 +226,7 @@ public class NoteService {
 		}
 
 	}
+
 	public List<Notes> getPin(String emailid) {
 		Optional<UserInfo> user = userRepository.findByEmailid(emailid);
 		int id = user.get().getId();
@@ -228,8 +239,6 @@ public class NoteService {
 
 		return notesList;
 	}
-	
-	
 
 	public String isArchive(int nid, String emailId) {
 
@@ -261,6 +270,7 @@ public class NoteService {
 
 		return "done";
 	}
+
 	public String isUnArchive(int nid, String emailId) {
 
 		Optional<Notes> note = notesRepository.findByNid(nid);
@@ -276,15 +286,12 @@ public class NoteService {
 		}
 		if (note.get().isArchive()) {
 
-
 			note.get().setArchive(false);
 			notesRepository.save(note.get());
 		}
 
-	
 		return "done";
 	}
-
 
 	public List<Notes> getArchivesNotes(String emailid) {
 		Optional<UserInfo> user = userRepository.findByEmailid(emailid);
@@ -299,6 +306,75 @@ public class NoteService {
 		return notesList;
 	}
 
-	
+	public List<Notes> searchByTitle(String emailid, String title) {
+		Optional<UserInfo> user = userRepository.findByEmailid(emailid);
+		int id = user.get().getId();
+		List<Notes> notes = notesRepository.findByUserId(id);
 
+		List<Notes> notesList = notes.stream().filter(i -> i.getUser().getEmailid().equals(emailid))
+				.collect(Collectors.toList());
+		List<Notes> noteSearch = notesList.stream().filter(i -> i.getTitle().equals(title))
+				.collect(Collectors.toList());
+
+		return noteSearch;
+	}
+
+	public String collaborateUSer(int noteId, String userEmailId, String owneremailid) {
+
+		Optional<Notes> note = notesRepository.findByNid(noteId);
+		Optional<UserInfo> user = userRepository.findByEmailid(owneremailid);
+
+		Collaborator collaborator = new Collaborator();
+
+		Optional<Collaborator> emailCollaborator = collaboratorRepository.findBycollaboratoremail(userEmailId);
+
+		System.out.println(!emailCollaborator.isPresent());
+
+		if (!emailCollaborator.isPresent()) {
+
+			collaborator.setCollaboratoremail(userEmailId);
+			collaborator.getNoteList().add(note.get());
+
+			collaboratorRepository.save(collaborator);
+
+			return "okk";
+
+		}
+		if (emailCollaborator.isPresent()) {
+
+			emailCollaborator.get().getNoteList().add(note.get());
+			collaboratorRepository.save(emailCollaborator.get());
+		}
+		return "done";
+
+	}
+
+	public String collaborate(String tokens, String emailid, int noteId) {
+
+		Optional<Notes> note = notesRepository.findByNid(noteId);
+		Optional<UserInfo> user = userRepository.findByEmailid(tokens);
+
+		Collaborator colaborate = new Collaborator();
+		Optional<Collaborator> newid = collaboratorRepository.findBycollaboratoremail(emailid);
+		if (!user.isPresent()) {
+			throw new ValueFoundNull(environment.getProperty("null value found"));
+		} else if (!note.isPresent()) {
+			throw new ValueFoundNull(environment.getProperty("null value found"));
+		}
+		if (!newid.isPresent()) {
+			colaborate.setCollaboratoremail(emailid);
+			colaborate.getNoteList().add(note.get());
+
+			collaboratorRepository.save(colaborate);
+			return "new user added succesfully";
+
+		}
+
+		if (newid.isPresent()) {
+			newid.get().getNoteList().add(note.get());
+			collaboratorRepository.save(newid.get());
+		}
+
+		return "collaborate";
+	}
 }

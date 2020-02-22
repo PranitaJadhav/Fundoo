@@ -9,26 +9,30 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "user")
-public class UserInfo implements Serializable{
-	
+public class UserInfo implements Serializable {
 
 	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
-	
-	private int  id;
-	
+
+	private int id;
+
 	@Column(name = "name")
 	@NotNull
 	private String name;
-	
+
 	@Column(name = "emailid")
 	@NotNull
 	@Email(message = "Enter valid emailId")
@@ -46,11 +50,19 @@ public class UserInfo implements Serializable{
 	@NotNull
 	private String confirmPassword;
 	
+	
 
 	
-	
-	  public UserInfo() { super(); }
-	 
+	  @ManyToMany
+	  
+	  @JoinTable (name = "Notes_UserInfo_join", joinColumns = @JoinColumn (name
+	  ="id"), inverseJoinColumns = @JoinColumn(name = "nid")) private List<Notes>
+	  collaborateList;
+	  @JsonIgnoreProperties(value = "collaborateUser")
+
+	public UserInfo() {
+		super();
+	}
 
 	public int getId() {
 		return id;
@@ -95,22 +107,21 @@ public class UserInfo implements Serializable{
 	public String getConfirmPassword() {
 		return confirmPassword;
 	}
-	
-	
-
 
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
 	}
 
+	@Override
+	public String toString() {
+		return "UserInfo [id=" + id + ", name=" + name + ", emailid=" + emailid + ", mobileNo=" + mobileNo
+				+ ", password=" + password + ", confirmPassword=" + confirmPassword + "]";
+	}
 	
-	  @Override public String toString() { return "UserInfo [id=" + id + ", name="
-	  + name + ", emailid=" + emailid + ", mobileNo=" + mobileNo + ", password=" +
-	  password + ", confirmPassword=" + confirmPassword + "]"; }
-	 
 
 	
-	
-	
+
+
+
 
 }

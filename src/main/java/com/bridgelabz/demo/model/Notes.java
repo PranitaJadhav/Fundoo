@@ -59,15 +59,35 @@ public class Notes implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
+	@JsonIgnoreProperties
 	private UserInfo user;
 
 	@ManyToMany
 	@JoinTable ( name = "Label_Notes_join", joinColumns = @JoinColumn (name
 			  ="nid"), inverseJoinColumns = @JoinColumn(name = "labelid"))
+	
 	@JsonIgnoreProperties(value = "listofNotes")
 	private List<Label> listLabel = new ArrayList<Label>();
-	//private List<Label> notesLabel;
+	
+	
+	  @ManyToMany
+	  //@JoinColumn(name = "collaboratorEmail") 
+	  @JoinTable ( name = "Collaborator_Notes_join", joinColumns = @JoinColumn (name
+			  ="nid"), inverseJoinColumns = @JoinColumn(name = "collaboratoremail"))
+	 @JsonIgnoreProperties(value = "collaboratorNotes")
+	  private List<Collaborator> collaboratorEmailId = new ArrayList<Collaborator>();
+	 
 
+	//private List<Label> notesLabel;
+	
+	  @ManyToMany
+	  
+	  @JoinTable (name = "Notes_UserInfo_join", joinColumns = @JoinColumn (name
+	  ="nid"), inverseJoinColumns = @JoinColumn(name = "id")) 
+	  @JsonIgnoreProperties(value = "collaborateList")
+	  private List<UserInfo> collaborateUser;
+	 
+	
 	public Notes() {
 		super();
 	}
@@ -156,15 +176,40 @@ public class Notes implements Serializable {
 
 
 
+	public List<Collaborator> getCollaboratorEmail() {
+		return collaboratorEmailId;
+	}
+
+
+
+
+	public void setCollaboratorEmail(List<Collaborator> collaboratorEmail) {
+		this.collaboratorEmailId = collaboratorEmail;
+	}
+
+
+
+
 	@Override
 	public String toString() {
 		return "Notes [nid=" + nid + ", title=" + title + ", description=" + description + ", createlabel_time="
 				+ createlabel_time + ", modified_time=" + modified_time + ", isTrash=" + isTrash + ", isPin=" + isPin
-				+ ", isArchive=" + isArchive + ", user=" + user + ", listLabel=" + listLabel + "]";
+				+ ", isArchive=" + isArchive + ", user=" + user + ", listLabel=" + listLabel + ", collaboratorEmailId="
+				+ collaboratorEmailId + ", collaborateUser=" + collaborateUser + "]";
 	}
 
 
+
+
+
+
 	
+
+
+
+
+
+
 	
 	
 }

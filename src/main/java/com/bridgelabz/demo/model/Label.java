@@ -39,6 +39,7 @@ public class Label {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
+	@JsonIgnoreProperties
 	private UserInfo user;
 
 	@ManyToMany

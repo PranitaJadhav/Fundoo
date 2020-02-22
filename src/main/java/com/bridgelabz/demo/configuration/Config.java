@@ -3,6 +3,7 @@ package com.bridgelabz.demo.configuration;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.bridgelabz.demo.model.Notes;
 import com.bridgelabz.demo.model.UserInfo;
@@ -15,10 +16,11 @@ public class Config {
 	}
 	
 	
-	/*
-	 * @Bean public BCryptPasswordEncoder name() { return new
-	 * BCryptPasswordEncoder(); }
-	 */
+	
+	  @Bean
+	  public BCryptPasswordEncoder name() { 
+		  return new BCryptPasswordEncoder(); }
+	 
 	  
 	@Bean
 	public UserInfo getUserInfo() {
@@ -30,6 +32,8 @@ public class Config {
 		return new Notes();
 
 	}
+	
+	 
 	 
 	 
 }

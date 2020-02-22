@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.demo.dto.ForgetPasswordDto;
@@ -33,9 +34,9 @@ public class UserService {
 
 	@Autowired
 	JMS jms;
-	//@Autowired
-	//BCryptPasswordEncoder bycryptPasswordEncoder;
-
+	/*
+	 * @Autowired BCryptPasswordEncoder bycryptPasswordEncoder;
+	 */
 	List<UserInfo> user = new ArrayList<UserInfo>();
 
 	public Response addUser(UserDto userdto) throws UnsupportedEncodingException {
@@ -54,7 +55,8 @@ public class UserService {
 
 		else if (userdto.getPassword().equals(userdto.getConfirmPassword())) {
 			
-			//userInfo.setPassword(bycryptPasswordEncoder.encode(userdto.getPassword()));
+			userInfo.setPassword(userdto.getPassword());
+			
 
 
 			String message	=	"Registered Successfully";
@@ -110,14 +112,18 @@ public class UserService {
 		if (!user.isPresent()) {
 			throw new RuntimeException("User doesnt exist");
 		}
-		if (!user.get().getPassword().equals(logindto.getPassword())) {
-
-			throw new RuntimeException("Password mismatch");
-
-		}
+		//if (!user.get().getPassword().equals(logindto.getPassword())) {
+		
+		  if(!user.get().getPassword().equals((logindto.getPassword()))) {
+		  
+		  
+		  throw new RuntimeException("Password mismatch");
+		  
+		  }
+		 
 		String userToken = tokenService.createToken(user.get().getEmailid());
 		System.out.println(userToken);
-		jms.sendMail(logindto.getEmailid(), userToken,"welcome");
+		//jms.sendMail(logindto.getEmailid(), userToken,"welcome");
 		
 
 		return new Response(200, "Login Successfull", userToken);
