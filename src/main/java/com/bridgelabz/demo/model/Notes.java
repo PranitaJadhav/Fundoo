@@ -59,7 +59,7 @@ public class Notes implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
-	@JsonIgnoreProperties
+	
 	private UserInfo user;
 
 	@ManyToMany
@@ -71,22 +71,23 @@ public class Notes implements Serializable {
 	
 	
 	  @ManyToMany
-	  //@JoinColumn(name = "collaboratorEmail") 
 	  @JoinTable ( name = "Collaborator_Notes_join", joinColumns = @JoinColumn (name
 			  ="nid"), inverseJoinColumns = @JoinColumn(name = "collaboratoremail"))
-	 @JsonIgnoreProperties(value = "collaboratorNotes")
+	 @JsonIgnoreProperties(value = "noteList")
 	  private List<Collaborator> collaboratorEmailId = new ArrayList<Collaborator>();
 	 
 
 	//private List<Label> notesLabel;
 	
-	  @ManyToMany
-	  
-	  @JoinTable (name = "Notes_UserInfo_join", joinColumns = @JoinColumn (name
-	  ="nid"), inverseJoinColumns = @JoinColumn(name = "id")) 
-	  @JsonIgnoreProperties(value = "collaborateList")
-	  private List<UserInfo> collaborateUser;
-	 
+	/*
+	 * @ManyToMany
+	 * 
+	 * @JoinTable (name = "Notes_UserInfo_join", joinColumns = @JoinColumn (name
+	 * ="nid"), inverseJoinColumns = @JoinColumn(name = "id"))
+	 * 
+	 * @JsonIgnoreProperties(value = "collaborateList") private List<UserInfo>
+	 * collaborateUser;
+	 */
 	
 	public Notes() {
 		super();
@@ -195,8 +196,13 @@ public class Notes implements Serializable {
 		return "Notes [nid=" + nid + ", title=" + title + ", description=" + description + ", createlabel_time="
 				+ createlabel_time + ", modified_time=" + modified_time + ", isTrash=" + isTrash + ", isPin=" + isPin
 				+ ", isArchive=" + isArchive + ", user=" + user + ", listLabel=" + listLabel + ", collaboratorEmailId="
-				+ collaboratorEmailId + ", collaborateUser=" + collaborateUser + "]";
+				+ collaboratorEmailId + "]";
 	}
+
+
+
+
+	
 
 
 

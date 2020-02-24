@@ -1,5 +1,6 @@
 package com.bridgelabz.demo.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import javax.persistence.ManyToMany;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-public class Collaborator {
+public class Collaborator implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
@@ -61,4 +62,5 @@ public class Collaborator {
 		return "Collaborator [id=" + id + ", collaboratoremail=" + collaboratoremail + ", noteList=" + noteList + "]";
 	}
 
+	
 }

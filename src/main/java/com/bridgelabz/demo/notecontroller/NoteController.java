@@ -173,14 +173,27 @@ public class NoteController {
 	}
 
 	
-	  @PostMapping("/collaborate") public String collaborate(@RequestHeader int
-	  noteId, @RequestHeader String userEmailId,
-	  
-	  @RequestHeader String token) { String owneremailid =
+	  @PostMapping("/collaborate") 
+	  public String collaborate(@RequestHeader int noteId, @RequestHeader String userEmailId,@RequestHeader String token) { String owneremailid =
 	  tokenService.getUserToken(token); 
 	  return noteService.collaborateUSer(noteId,userEmailId, owneremailid);
 	  
 	  }
+	  @DeleteMapping("/deleteCollaborate")
+	  public String deleteCollaborate(@RequestHeader int noteId, @RequestHeader String userEmailId, @RequestHeader String token) { 
+		  String owneremailid = tokenService.getUserToken(token); 
+			  return noteService.deleteCollaborate(noteId,userEmailId, owneremailid);
+			  
+			  }
+	  @GetMapping("/getcollaborator")
+		public List<Collaborator> getAllCollaborator(@RequestHeader String token, @RequestHeader int noteID)
+
+		{
+			String emailid = tokenService.getUserToken(token);
+
+			return noteService.getAllCollaborator(emailid,noteID);
+		}
+
 	 
 	@GetMapping("/searchByTitle")
 	public List<Notes> searchByTitle(@RequestHeader String token,@RequestHeader String title)

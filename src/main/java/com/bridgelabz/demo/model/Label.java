@@ -1,5 +1,6 @@
 package com.bridgelabz.demo.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +22,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Table(name = "Label")
 
-public class Label {
+public class Label implements Serializable  {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "labelid")
 	private int labelId;
 
@@ -39,7 +40,6 @@ public class Label {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
-	@JsonIgnoreProperties
 	private UserInfo user;
 
 	@ManyToMany

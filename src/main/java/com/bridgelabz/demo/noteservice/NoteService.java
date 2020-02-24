@@ -1,5 +1,6 @@
 package com.bridgelabz.demo.noteservice;
 
+import java.security.cert.PKIXRevocationChecker.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -324,6 +325,54 @@ public class NoteService {
 		Optional<Notes> note = notesRepository.findByNid(noteId);
 		Optional<UserInfo> user = userRepository.findByEmailid(owneremailid);
 
+		Optional<Collaborator> emailCollaborator = collaboratorRepository.findBycollaboratoremail(userEmailId);
+		boolean flag = true;
+		System.out.println(!emailCollaborator.isPresent());
+		if (!emailCollaborator.isPresent()) {
+			Collaborator collaborator = new Collaborator();
+
+			collaborator.setCollaboratoremail(userEmailId);
+			collaboratorRepository.save(collaborator);
+			Optional<Collaborator> emailCollaborator1 = collaboratorRepository.findBycollaboratoremail(userEmailId);
+
+			/*
+			 * emailCollaborator1.get().getNoteList().add(note.get());
+			 * collaboratorRepository.save(emailCollaborator1.get());
+			 */
+
+			note.get().getCollaboratorEmail().add(emailCollaborator1.get());
+			notesRepository.save(note.get());
+
+			return "done";
+		} else {
+			boolean check = collaboratorCheck(emailCollaborator, userEmailId, noteId);
+			if (check) {
+				return "already collaborated";
+			} else {
+				note.get().getCollaboratorEmail().add(emailCollaborator.get());
+				notesRepository.save(note.get());
+				return "collaborated with already available but not that note";
+			}
+		}
+
+	}
+
+	public boolean collaboratorCheck(Optional<Collaborator> collaboartorList, String emailId, int noteId) {
+		boolean condition = false;
+		for (int i = 0; i < collaboartorList.get().getNoteList().size(); i++) {
+			if ((collaboartorList.get().getNoteList().get(i).getNid()) == noteId) {
+				return condition = true;
+			} else {
+				condition = false;
+			}
+		}
+		return condition;
+	}
+
+	public String deleteCollaborate(int noteId, String userEmailId, String owneremailid) {
+		Optional<Notes> note = notesRepository.findByNid(noteId);
+		Optional<UserInfo> user = userRepository.findByEmailid(owneremailid);
+
 		Collaborator collaborator = new Collaborator();
 
 		Optional<Collaborator> emailCollaborator = collaboratorRepository.findBycollaboratoremail(userEmailId);
@@ -332,49 +381,57 @@ public class NoteService {
 
 		if (!emailCollaborator.isPresent()) {
 
-			collaborator.setCollaboratoremail(userEmailId);
-			collaborator.getNoteList().add(note.get());
-
-			collaboratorRepository.save(collaborator);
-
-			return "okk";
+			return "invalid";
 
 		}
 		if (emailCollaborator.isPresent()) {
 
-			emailCollaborator.get().getNoteList().add(note.get());
+			emailCollaborator.get().getNoteList().remove(note.get());
+			collaboratorRepository.delete(emailCollaborator.get());
 			collaboratorRepository.save(emailCollaborator.get());
 		}
 		return "done";
 
 	}
 
-	public String collaborate(String tokens, String emailid, int noteId) {
+	public List<Collaborator> getAllCollaborator(String emailid, int noteID) {
+		System.out.println(emailid);
+		          
+		Optional<Notes> notes = notesRepository.findByNid(noteID);
+		System.out.println(notes.isPresent());
+		//System.out.println(notes.toString());
+		List list	=	notes.get().getCollaboratorEmail();
+		//System.out.println(list);
+		
+		return list;
+		//List<Notes> notesList = notes.stream().filter(i -> i.isArchive()).collect(Collectors.toList());
 
-		Optional<Notes> note = notesRepository.findByNid(noteId);
-		Optional<UserInfo> user = userRepository.findByEmailid(tokens);
-
-		Collaborator colaborate = new Collaborator();
-		Optional<Collaborator> newid = collaboratorRepository.findBycollaboratoremail(emailid);
-		if (!user.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
-		} else if (!note.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
-		}
-		if (!newid.isPresent()) {
-			colaborate.setCollaboratoremail(emailid);
-			colaborate.getNoteList().add(note.get());
-
-			collaboratorRepository.save(colaborate);
-			return "new user added succesfully";
-
-		}
-
-		if (newid.isPresent()) {
-			newid.get().getNoteList().add(note.get());
-			collaboratorRepository.save(newid.get());
-		}
-
-		return "collaborate";
+		
+		
 	}
+
+	/*
+	 * public String collaborate(String tokens, String emailid, int noteId) {
+	 * 
+	 * Optional<Notes> note = notesRepository.findByNid(noteId); Optional<UserInfo>
+	 * user = userRepository.findByEmailid(tokens);
+	 * 
+	 * Collaborator colaborate = new Collaborator(); Optional<Collaborator> newid =
+	 * collaboratorRepository.findBycollaboratoremail(emailid); if
+	 * (!user.isPresent()) { throw new
+	 * ValueFoundNull(environment.getProperty("null value found")); } else if
+	 * (!note.isPresent()) { throw new
+	 * ValueFoundNull(environment.getProperty("null value found")); } if
+	 * (!newid.isPresent()) { colaborate.setCollaboratoremail(emailid);
+	 * colaborate.getNoteList().add(note.get());
+	 * 
+	 * collaboratorRepository.save(colaborate); return "new user added succesfully";
+	 * 
+	 * }
+	 * 
+	 * if (newid.isPresent()) { newid.get().getNoteList().add(note.get());
+	 * collaboratorRepository.save(newid.get()); }
+	 * 
+	 * return "collaborate"; }
+	 */
 }

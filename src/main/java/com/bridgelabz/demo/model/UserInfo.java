@@ -1,27 +1,18 @@
 package com.bridgelabz.demo.model;
 
 import java.io.Serializable;
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 @Entity
 @Table(name = "user")
-public class UserInfo implements Serializable {
+public class UserInfo  implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -53,12 +44,16 @@ public class UserInfo implements Serializable {
 	
 
 	
-	  @ManyToMany
-	  
-	  @JoinTable (name = "Notes_UserInfo_join", joinColumns = @JoinColumn (name
-	  ="id"), inverseJoinColumns = @JoinColumn(name = "nid")) private List<Notes>
-	  collaborateList;
-	  @JsonIgnoreProperties(value = "collaborateUser")
+	/*
+	 * @ManyToMany
+	 * 
+	 * @JoinTable (name = "Notes_UserInfo_join", joinColumns = @JoinColumn (name
+	 * ="id"), inverseJoinColumns = @JoinColumn(name = "nid"))
+	 * 
+	 * @JsonIgnoreProperties(value = "collaborateUser")
+	 * 
+	 * private List<Notes> collaborateList;
+	 */
 
 	public UserInfo() {
 		super();
