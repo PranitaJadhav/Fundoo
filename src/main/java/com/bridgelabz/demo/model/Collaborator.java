@@ -1,6 +1,5 @@
 package com.bridgelabz.demo.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,16 +14,15 @@ import javax.persistence.ManyToMany;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-public class Collaborator implements Serializable {
+public class Collaborator {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 
-	// @Column(name = "collaboratoremail")
+	
 	private String collaboratoremail;
 
 	@ManyToMany
-	// @JoinColumn(name = "nid")
 	@JoinTable(name = "Collaborator_Notes_join", joinColumns = @JoinColumn(name = "collaboratoremail"), inverseJoinColumns = @JoinColumn(name = "nid"))
 	@JsonIgnoreProperties(value = "collaboratorEmailId")
 	private List<Notes> noteList = new ArrayList<Notes>();
@@ -57,10 +55,6 @@ public class Collaborator implements Serializable {
 		this.noteList = noteList;
 	}
 
-	@Override
-	public String toString() {
-		return "Collaborator [id=" + id + ", collaboratoremail=" + collaboratoremail + ", noteList=" + noteList + "]";
-	}
 
 	
 }

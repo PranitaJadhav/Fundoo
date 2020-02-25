@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.bridgelabz.demo.model.Notes;
-import com.bridgelabz.demo.model.UserInfo;
+import com.bridgelabz.demo.model.User;
 
 @Configuration
 public class Config {
@@ -23,8 +23,8 @@ public class Config {
 	 
 	  
 	@Bean
-	public UserInfo getUserInfo() {
-		return new UserInfo();
+	public User getUserInfo() {
+		return new User();
 
 	}
 	@Bean

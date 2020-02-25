@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bridgelabz.demo.dto.NotesDto;
 import com.bridgelabz.demo.model.Collaborator;
 import com.bridgelabz.demo.model.Notes;
-import com.bridgelabz.demo.model.UserInfo;
+import com.bridgelabz.demo.model.User;
 import com.bridgelabz.demo.noteservice.NoteService;
 import com.bridgelabz.demo.response.Response;
 import com.bridgelabz.demo.userservice.UserService;
@@ -34,13 +34,13 @@ public class NoteController {
 	UserService userservice;
 
 	@Autowired
-	UserInfo userInfo;
+	User userInfo;
 
 	@Autowired
 	private TokenService tokenService;
 
 	@PostMapping("/create")
-	public Response add(@RequestBody NotesDto notesDto, @RequestParam String token)
+	public Response add(@RequestBody Notes notesDto, @RequestParam String token)
 			throws UnsupportedEncodingException {
 		System.out.println(token);
 

@@ -20,7 +20,7 @@ import com.bridgelabz.demo.dto.ForgetPasswordDto;
 import com.bridgelabz.demo.dto.LoginDto;
 import com.bridgelabz.demo.dto.ResetPasswordDto;
 import com.bridgelabz.demo.dto.UserDto;
-import com.bridgelabz.demo.model.UserInfo;
+import com.bridgelabz.demo.model.User;
 import com.bridgelabz.demo.response.Response;
 import com.bridgelabz.demo.userrepository.UserRepository;
 import com.bridgelabz.demo.userservice.UserService;
@@ -48,14 +48,14 @@ public class UserController {
 
 	@GetMapping("/get")
 	@RequestMapping(method = RequestMethod.GET, value = "/get")
-	public List<UserInfo> getUser(@RequestParam String token) {
+	public List<User> getUser(@RequestParam String token) {
 		System.out.println("Hii");
 		return userService.getAll(token);
 
 	}
 
 	@GetMapping("/get/{id}")
-	public UserInfo getById(@PathVariable int id) {
+	public User getById(@PathVariable int id) {
 		return userService.getId(id);
 
 	}

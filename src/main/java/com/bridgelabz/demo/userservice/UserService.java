@@ -15,7 +15,7 @@ import com.bridgelabz.demo.dto.ForgetPasswordDto;
 import com.bridgelabz.demo.dto.LoginDto;
 import com.bridgelabz.demo.dto.ResetPasswordDto;
 import com.bridgelabz.demo.dto.UserDto;
-import com.bridgelabz.demo.model.UserInfo;
+import com.bridgelabz.demo.model.User;
 import com.bridgelabz.demo.response.Response;
 import com.bridgelabz.demo.userrepository.UserRepository;
 import com.bridgelabz.demo.utility.JMS;
@@ -37,14 +37,14 @@ public class UserService {
 	/*
 	 * @Autowired BCryptPasswordEncoder bycryptPasswordEncoder;
 	 */
-	List<UserInfo> user = new ArrayList<UserInfo>();
+	List<User> user = new ArrayList<User>();
 
 	public Response addUser(UserDto userdto) throws UnsupportedEncodingException {
 		System.out.println("hey3");
 		
 											//source	destination
-		UserInfo userInfo = modelMapper.map(userdto, UserInfo.class);
-		Optional<UserInfo> userExist = userRepository.findByEmailid(userdto.getEmailid());
+		User userInfo = modelMapper.map(userdto, User.class);
+		Optional<User> userExist = userRepository.findByEmailid(userdto.getEmailid());
 
 		System.out.println(userExist.toString());
 
@@ -61,7 +61,7 @@ public class UserService {
 
 			String message	=	"Registered Successfully";
 			System.out.println(message);
-			jms.sendMail(userdto.getEmailid(), null,message);
+			//jms.sendMail(userdto.getEmailid(), null,message);
 			
 			
 			userRepository.save(userInfo);
@@ -74,22 +74,22 @@ public class UserService {
 
 	}
 
-	public List<UserInfo> getAll(String token) {
+	public List<User> getAll(String token) {
 		String tok	=	tokenService.getUserToken(token);
-		Optional<UserInfo> userExist = userRepository.findByEmailid(tok);
+		Optional<User> userExist = userRepository.findByEmailid(tok);
 
 		if (!userExist.isPresent()) {
 			throw new RuntimeException("User doesnt exist");
 		}
 		else {
-		List<UserInfo> user = new ArrayList<UserInfo>();
+		List<User> user = new ArrayList<User>();
 		userRepository.findAll().forEach(user::add);
 		return user;
 		}
 
 	}
 
-	public UserInfo getId(int id) {
+	public User getId(int id) {
 		return userRepository.findById(id).get();
 
 	}
@@ -105,7 +105,7 @@ public class UserService {
 	public Response login(LoginDto logindto) throws UnsupportedEncodingException { // UserInfo userInfo = //
 																					// modelMapper.map(logindto, //
 																					// UserInfo.class);
-		Optional<UserInfo> user = userRepository.findByEmailid(logindto.getEmailid());
+		Optional<User> user = userRepository.findByEmailid(logindto.getEmailid());
 		
 		System.out.println("user"+user);
 
@@ -123,7 +123,7 @@ public class UserService {
 		 
 		String userToken = tokenService.createToken(user.get().getEmailid());
 		System.out.println(userToken);
-		//jms.sendMail(logindto.getEmailid(), userToken,"welcome");
+		jms.sendMail(logindto.getEmailid(), userToken,"welcome");
 		
 
 		return new Response(200, "Login Successfull", userToken);
@@ -137,7 +137,7 @@ public class UserService {
 
 		//String tok	=	tokenService.getUserToken(token);
 		
-		Optional<UserInfo> userExist = userRepository.findByEmailid(forgetPasswordDto.getEmailid());
+		Optional<User> userExist = userRepository.findByEmailid(forgetPasswordDto.getEmailid());
 		System.out.println("user"+userExist);
 
 
@@ -161,7 +161,7 @@ public class UserService {
 		 */
 
 		//UserInfo userInfo = modelMapper.map(resetPasswordDto, UserInfo.class);
-		Optional<UserInfo> userExist = userRepository.findByEmailid(resetPasswordDto.getEmailid());
+		Optional<User> userExist = userRepository.findByEmailid(resetPasswordDto.getEmailid());
 		
 		
 			if (resetPasswordDto.getPassword().equals(resetPasswordDto.getConfirmPassword())) {
@@ -184,7 +184,7 @@ public class UserService {
 
 	public void updateUser( UserDto userDto,String token) {
 		String emailid = tokenService.getUserToken(token);
-		Optional<UserInfo> user	=	userRepository.findByEmailid(emailid);
+		Optional<User> user	=	userRepository.findByEmailid(emailid);
 		if(user.isPresent()) {
 			user.get().setMobileNo(userDto.getMobileNo());
 			user.get().setName(userDto.getName());

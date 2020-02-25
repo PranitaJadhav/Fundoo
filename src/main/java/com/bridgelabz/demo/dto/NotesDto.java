@@ -1,18 +1,13 @@
 package com.bridgelabz.demo.dto;
 
-import com.bridgelabz.demo.model.UserInfo;
+import com.bridgelabz.demo.model.User;
 
 public class NotesDto {
-	private int nid;
+	
 	private String title;
 	private String description;
-	UserInfo userInfo;
-	public int getNid() {
-		return nid;
-	}
-	public void setNid(int nid) {
-		this.nid = nid;
-	}
+	User userInfo;
+	
 	public String getTitle() {
 		return title;
 	}
@@ -25,16 +20,16 @@ public class NotesDto {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public UserInfo getUserInfo() {
+	public User getUserInfo() {
 		return userInfo;
 	}
-	public void setUserInfo(UserInfo userInfo) {
+	public void setUserInfo(User userInfo) {
 		this.userInfo = userInfo;
 	}
-	/*
-	 * @Override public String toString() { return "NotesDto [nid=" + nid +
-	 * ", title=" + title + ", description=" + description + ", userInfo=" +
-	 * userInfo + "]"; }
-	 */
+	@Override
+	public String toString() {
+		return "NotesDto [title=" + title + ", description=" + description + ", userInfo=" + userInfo + "]";
+	}
+	
 
 }

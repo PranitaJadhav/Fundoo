@@ -1,6 +1,5 @@
 package com.bridgelabz.demo.noteservice;
 
-import java.security.cert.PKIXRevocationChecker.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +15,7 @@ import com.bridgelabz.demo.exception.ValueFoundNull;
 import com.bridgelabz.demo.labelrepository.CollaboratorRepository;
 import com.bridgelabz.demo.model.Collaborator;
 import com.bridgelabz.demo.model.Notes;
-import com.bridgelabz.demo.model.UserInfo;
+import com.bridgelabz.demo.model.User;
 import com.bridgelabz.demo.notesrepository.NotesRepository;
 import com.bridgelabz.demo.response.Response;
 import com.bridgelabz.demo.userrepository.UserRepository;
@@ -33,7 +32,7 @@ public class NoteService {
 	UserRepository userRepository;
 
 	@Autowired
-	UserInfo userInfo;
+	User userInfo;
 
 	@Autowired
 	ModelMapper modelMapper;
@@ -51,31 +50,33 @@ public class NoteService {
 	@Autowired
 	CollaboratorRepository collaboratorRepository;
 
-	public Response createNote(NotesDto notesDto, String token) {
+	public Response createNote(Notes notesDto, String token) {
 
-		Notes notes = modelMapper.map(notesDto, Notes.class);
+		 Notes notes = modelMapper.map(notesDto, Notes.class);
 
 		try {
 
-			if (!(notesDto.getTitle().isEmpty() && notesDto.getDescription().isEmpty())) {
-
-				Optional<UserInfo> user = userRepository.findByEmailid(token);
+			if (!(notesDto.getTitle().isEmpty()) && (!notesDto.getDescription().isEmpty())) {
+				System.out.println("in if");
+				Optional<User> user = userRepository.findByEmailid(token);
 
 				notes.setUser(user.get());
 				notes.setCreatelabel_time(LocalDateTime.now());
 				notesRepository.save(notes);
-				return new Response(200, "note created", null);
+				System.out.println("save");
+				 return new Response(200, "note created", null);
 			}
 
 		} catch (Exception e) {
 			return null;
 		}
-		return new Response(500, "null value", null);
+		 return new Response(500, "null value", null);
+		//return " not created";
 	}
 
 	public void deleteNoteByid(int id, String token) {
 		System.out.println(token);
-		Optional<UserInfo> user = userRepository.findByEmailid(token);
+		Optional<User> user = userRepository.findByEmailid(token);
 		System.out.println(id);
 
 		Optional<Notes> note = notesRepository.findByNid(id);
@@ -89,7 +90,7 @@ public class NoteService {
 
 	public List<Notes> getAll(String token) {
 		System.out.println(token);
-		Optional<UserInfo> userExist = userRepository.findByEmailid(token);
+		Optional<User> userExist = userRepository.findByEmailid(token);
 		int id = userExist.get().getId();
 		System.out.println(id);
 		List<Notes> noteList = notesRepository.findAll();
@@ -108,7 +109,7 @@ public class NoteService {
 		System.out.println(token);
 		Optional<Notes> note = notesRepository.findByNid(id);
 		System.out.println(note.get());
-		Optional<UserInfo> user = userRepository.findByEmailid(token);
+		Optional<User> user = userRepository.findByEmailid(token);
 
 		if (user.isPresent()) {
 			if (note.isPresent()) {
@@ -126,7 +127,7 @@ public class NoteService {
 	public void trashNote(int id, String emailId) {
 		System.out.println(emailId);
 		Optional<Notes> note = notesRepository.findByNid(id);
-		Optional<UserInfo> user = userRepository.findByEmailid(emailId);
+		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
 			throw new ValueFoundNull(environment.getProperty("null value found"));
@@ -153,7 +154,7 @@ public class NoteService {
 	public void unTrashNote(int id, String emailId) {
 		System.out.println(emailId);
 		Optional<Notes> note = notesRepository.findByNid(id);
-		Optional<UserInfo> user = userRepository.findByEmailid(emailId);
+		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
 			throw new ValueFoundNull(environment.getProperty("null value found"));
@@ -170,7 +171,7 @@ public class NoteService {
 	}
 
 	public List<Notes> getTrash(String emailid) {
-		Optional<UserInfo> user = userRepository.findByEmailid(emailid);
+		Optional<User> user = userRepository.findByEmailid(emailid);
 		int id = user.get().getId();
 		List<Notes> notes = notesRepository.findByUserId(id);
 		List<Notes> notesList = notes.stream().filter(i -> i.isTrash()).collect(Collectors.toList());
@@ -185,7 +186,7 @@ public class NoteService {
 	public void deleteTrash(int nid, String emailid) {
 		Optional<Notes> note = notesRepository.findByNid(nid);
 		System.out.println(note);
-		Optional<UserInfo> user = userRepository.findByEmailid(emailid);
+		Optional<User> user = userRepository.findByEmailid(emailid);
 
 		if (!user.isPresent()) {
 			throw new ValueFoundNull(environment.getProperty("null value found"));
@@ -206,7 +207,7 @@ public class NoteService {
 
 	public void isPinUnpin(int nid, String emailId) {
 		Optional<Notes> note = notesRepository.findByNid(nid);
-		Optional<UserInfo> user = userRepository.findByEmailid(emailId);
+		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
 			throw new ValueFoundNull(environment.getProperty("null value found"));
@@ -229,7 +230,7 @@ public class NoteService {
 	}
 
 	public List<Notes> getPin(String emailid) {
-		Optional<UserInfo> user = userRepository.findByEmailid(emailid);
+		Optional<User> user = userRepository.findByEmailid(emailid);
 		int id = user.get().getId();
 		List<Notes> notes = notesRepository.findByUserId(id);
 		List<Notes> notesList = notes.stream().filter(i -> i.isPin()).collect(Collectors.toList());
@@ -244,7 +245,7 @@ public class NoteService {
 	public String isArchive(int nid, String emailId) {
 
 		Optional<Notes> note = notesRepository.findByNid(nid);
-		Optional<UserInfo> user = userRepository.findByEmailid(emailId);
+		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
 			throw new ValueFoundNull(environment.getProperty("null value found"));
@@ -275,7 +276,7 @@ public class NoteService {
 	public String isUnArchive(int nid, String emailId) {
 
 		Optional<Notes> note = notesRepository.findByNid(nid);
-		Optional<UserInfo> user = userRepository.findByEmailid(emailId);
+		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
 			throw new ValueFoundNull(environment.getProperty("null value found"));
@@ -295,7 +296,7 @@ public class NoteService {
 	}
 
 	public List<Notes> getArchivesNotes(String emailid) {
-		Optional<UserInfo> user = userRepository.findByEmailid(emailid);
+		Optional<User> user = userRepository.findByEmailid(emailid);
 		int id = user.get().getId();
 		List<Notes> notes = notesRepository.findByUserId(id);
 		List<Notes> notesList = notes.stream().filter(i -> i.isArchive()).collect(Collectors.toList());
@@ -308,7 +309,7 @@ public class NoteService {
 	}
 
 	public List<Notes> searchByTitle(String emailid, String title) {
-		Optional<UserInfo> user = userRepository.findByEmailid(emailid);
+		Optional<User> user = userRepository.findByEmailid(emailid);
 		int id = user.get().getId();
 		List<Notes> notes = notesRepository.findByUserId(id);
 
@@ -323,7 +324,7 @@ public class NoteService {
 	public String collaborateUSer(int noteId, String userEmailId, String owneremailid) {
 
 		Optional<Notes> note = notesRepository.findByNid(noteId);
-		Optional<UserInfo> user = userRepository.findByEmailid(owneremailid);
+		Optional<User> user = userRepository.findByEmailid(owneremailid);
 
 		Optional<Collaborator> emailCollaborator = collaboratorRepository.findBycollaboratoremail(userEmailId);
 		boolean flag = true;
@@ -371,7 +372,7 @@ public class NoteService {
 
 	public String deleteCollaborate(int noteId, String userEmailId, String owneremailid) {
 		Optional<Notes> note = notesRepository.findByNid(noteId);
-		Optional<UserInfo> user = userRepository.findByEmailid(owneremailid);
+		Optional<User> user = userRepository.findByEmailid(owneremailid);
 
 		Collaborator collaborator = new Collaborator();
 
@@ -395,19 +396,12 @@ public class NoteService {
 	}
 
 	public List<Collaborator> getAllCollaborator(String emailid, int noteID) {
-		System.out.println(emailid);
-		          
-		Optional<Notes> notes = notesRepository.findByNid(noteID);
-		System.out.println(notes.isPresent());
-		//System.out.println(notes.toString());
-		List list	=	notes.get().getCollaboratorEmail();
-		//System.out.println(list);
-		
-		return list;
-		//List<Notes> notesList = notes.stream().filter(i -> i.isArchive()).collect(Collectors.toList());
 
-		
-		
+		Optional<Notes> notes = notesRepository.findByNid(noteID);
+		List<Collaborator> list = notes.get().getCollaboratorEmail();
+
+		return list;
+
 	}
 
 	/*

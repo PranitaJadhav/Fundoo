@@ -1,6 +1,5 @@
 package com.bridgelabz.demo.model;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,54 +7,34 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "user")
-public class UserInfo  implements Serializable {
+public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id")
 
 	private int id;
 
-	@Column(name = "name")
 	@NotNull
 	private String name;
 
-	@Column(name = "emailid")
-	@NotNull
+	@NotEmpty
 	@Email(message = "Enter valid emailId")
 	private String emailid;
 
-	@Column(name = "mobile_no")
 	@NotNull
 	private String mobileNo;
 
-	@Column(name = "password")
 	@NotNull
 	private String password;
 
-	@Column(name = "confirm_password")
 	@NotNull
 	private String confirmPassword;
-	
-	
 
-	
-	/*
-	 * @ManyToMany
-	 * 
-	 * @JoinTable (name = "Notes_UserInfo_join", joinColumns = @JoinColumn (name
-	 * ="id"), inverseJoinColumns = @JoinColumn(name = "nid"))
-	 * 
-	 * @JsonIgnoreProperties(value = "collaborateUser")
-	 * 
-	 * private List<Notes> collaborateList;
-	 */
-
-	public UserInfo() {
+	public User() {
 		super();
 	}
 
@@ -106,17 +85,5 @@ public class UserInfo  implements Serializable {
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
 	}
-
-	@Override
-	public String toString() {
-		return "UserInfo [id=" + id + ", name=" + name + ", emailid=" + emailid + ", mobileNo=" + mobileNo
-				+ ", password=" + password + ", confirmPassword=" + confirmPassword + "]";
-	}
-	
-
-	
-
-
-
 
 }
