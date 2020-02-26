@@ -27,7 +27,7 @@ public class Notes {
 
 	private int nid;
 
-	@NotBlank
+	@NotBlank(message = "title is mandatory")
 	private String title;
 
 	private String description;

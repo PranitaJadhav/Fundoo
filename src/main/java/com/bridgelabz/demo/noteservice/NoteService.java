@@ -1,17 +1,20 @@
 package com.bridgelabz.demo.noteservice;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.demo.dto.NotesDto;
-import com.bridgelabz.demo.exception.ValueFoundNull;
+import com.bridgelabz.demo.exception.UserNotPresent;
 import com.bridgelabz.demo.labelrepository.CollaboratorRepository;
 import com.bridgelabz.demo.model.Collaborator;
 import com.bridgelabz.demo.model.Notes;
@@ -49,12 +52,17 @@ public class NoteService {
 
 	@Autowired
 	CollaboratorRepository collaboratorRepository;
+	
+
+
+	Logger log	=	LoggerFactory.getLogger(this.getClass());
 
 	public Response createNote(Notes notesDto, String token) {
 
-		 Notes notes = modelMapper.map(notesDto, Notes.class);
+		Notes notes = modelMapper.map(notesDto, Notes.class);
+		System.out.println(token);
 
-		try {
+		//log.getClass().
 
 			if (!(notesDto.getTitle().isEmpty()) && (!notesDto.getDescription().isEmpty())) {
 				System.out.println("in if");
@@ -64,14 +72,12 @@ public class NoteService {
 				notes.setCreatelabel_time(LocalDateTime.now());
 				notesRepository.save(notes);
 				System.out.println("save");
-				 return new Response(200, "note created", null);
+				return new Response(200, "note created", null);
 			}
 
-		} catch (Exception e) {
-			return null;
-		}
-		 return new Response(500, "null value", null);
-		//return " not created";
+		
+		return new Response(500, "null value", null);
+		// return " not created";
 	}
 
 	public void deleteNoteByid(int id, String token) {
@@ -99,7 +105,7 @@ public class NoteService {
 				.collect(Collectors.toList());
 
 		if (!userExist.isPresent())
-			throw new ValueFoundNull("User Doesnt exist");
+			throw new UserNotPresent("User Doesnt exist");
 		else
 			return noteList2;
 
@@ -130,10 +136,10 @@ public class NoteService {
 		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		} else if (!note.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		}
 
@@ -157,10 +163,10 @@ public class NoteService {
 		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		} else if (!note.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		} else if (note.get().isTrash()) {
 
@@ -189,13 +195,13 @@ public class NoteService {
 		Optional<User> user = userRepository.findByEmailid(emailid);
 
 		if (!user.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		} else if (!note.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		} else if (!note.get().isTrash()) {
-			throw new ValueFoundNull(environment.getProperty("Not present in trash"));
+			throw new UserNotPresent(environment.getProperty("Not present in trash"));
 
 		} else {
 			notesRepository.delete(note.get());
@@ -210,10 +216,10 @@ public class NoteService {
 		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		} else if (!note.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		} else {
 
@@ -248,11 +254,11 @@ public class NoteService {
 		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		}
 		if (!note.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		}
 		if (note.get().isPin()) {
@@ -279,11 +285,11 @@ public class NoteService {
 		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		}
 		if (!note.isPresent()) {
-			throw new ValueFoundNull(environment.getProperty("null value found"));
+			throw new UserNotPresent(environment.getProperty("null value found"));
 
 		}
 		if (note.get().isArchive()) {
@@ -327,7 +333,6 @@ public class NoteService {
 		Optional<User> user = userRepository.findByEmailid(owneremailid);
 
 		Optional<Collaborator> emailCollaborator = collaboratorRepository.findBycollaboratoremail(userEmailId);
-		boolean flag = true;
 		System.out.println(!emailCollaborator.isPresent());
 		if (!emailCollaborator.isPresent()) {
 			Collaborator collaborator = new Collaborator();
@@ -404,6 +409,36 @@ public class NoteService {
 
 	}
 
+	public Response reminder(int nid, String emailId, String time) {
+		Optional<Notes> note = notesRepository.findByNid(nid);
+		Optional<User> user = userRepository.findByEmailid(emailId);
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime reminderTime = LocalDateTime.parse(time, dateTimeFormatter);
+		if (user.isPresent()) {
+			note.get().setReminder(true);
+			note.get().setReminder(reminderTime);
+			notesRepository.save(note.get());
+			return new Response(200, "reimnder sret", reminderTime);
+		} else {
+			return new Response(0, "user doesnt exist", user.get().getEmailid());
+		}
+
+	}
+
+	public Response removeReminder(int nid, String emailId) {
+		Optional<Notes> note = notesRepository.findByNid(nid);
+		Optional<User> user = userRepository.findByEmailid(emailId);
+
+		if (user.isPresent()) {
+			note.get().setReminder(false);
+			note.get().setReminder(null);
+			notesRepository.save(note.get());
+			return new Response(200, "reimnder removed", null);
+		} else {
+			return new Response(0, "user doesnt exist", user.get().getEmailid());
+		}
+	}
+
 	/*
 	 * public String collaborate(String tokens, String emailid, int noteId) {
 	 * 
@@ -428,4 +463,13 @@ public class NoteService {
 	 * 
 	 * return "collaborate"; }
 	 */
+	
+	  public String tokenReturn(String token) { return
+	  tokenService.getUserToken(token);
+	  
+	  
+	  
+	  }
+	 
+
 }

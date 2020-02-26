@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.demo.dto.LabelDto;
-import com.bridgelabz.demo.exception.ValueFoundNull;
+import com.bridgelabz.demo.exception.UserNotPresent;
 import com.bridgelabz.demo.labelrepository.LabelRepository;
 import com.bridgelabz.demo.model.Label;
 import com.bridgelabz.demo.model.Notes;
@@ -44,7 +44,7 @@ public class LabelService implements LabelInterface {
 		Label label = modelMapper.map(labelDto, Label.class);
 		Optional<User> user = userRepository.findByEmailid(t);
 		if (!user.isPresent()) {
-			throw new ValueFoundNull("user not found");
+			throw new UserNotPresent("user not found");
 
 		}
 
@@ -62,7 +62,7 @@ public class LabelService implements LabelInterface {
 		System.out.println(t);
 		Optional<User> userExist = userRepository.findByEmailid(t);
 		if (!userExist.isPresent())
-			throw new ValueFoundNull("User Doesnt exist");
+			throw new UserNotPresent("User Doesnt exist");
 		else
 			return (List<Label>) labelRepository.findAll();
 
@@ -72,12 +72,13 @@ public class LabelService implements LabelInterface {
 		String UserEmailid = tokenService.getUserToken(token);
 		System.out.println(UserEmailid);
 		Optional<User> userExist = userRepository.findByEmailid(UserEmailid);
-		int id = userExist.get().getId();
+		//int id = userExist.get().getId();
 		Optional<Notes> noteExist = noteRepository.findByNid(noteId);
 		Optional<Label> labelExist = labelRepository.findByLabelId(labelId);
 		if (!userExist.isPresent()) {
 
-			throw new RuntimeException("User doesnt exist");
+			//throw new RuntimeException("User doesnt exist");
+			
 		} else if (!noteExist.isPresent()) {
 			throw new RuntimeException("Note is not present");
 
@@ -143,10 +144,10 @@ public class LabelService implements LabelInterface {
 		System.out.println(labelExist);
 
 		if (!userExist.isPresent()) {
-			throw new ValueFoundNull("user not found");
+			throw new UserNotPresent("user not found");
 
 		} else if (!labelExist.isPresent()) {
-			throw new ValueFoundNull("label not found");
+			throw new UserNotPresent("label not found");
 
 		} else {
 
@@ -162,10 +163,10 @@ public class LabelService implements LabelInterface {
 		Optional<Label> labelExist = labelRepository.findByLabelId(id);
 
 		if (!userExist.isPresent()) {
-			throw new ValueFoundNull("user not found");
+			throw new UserNotPresent("user not found");
 
 		} else if (!labelExist.isPresent()) {
-			throw new ValueFoundNull("label not found");
+			throw new UserNotPresent("label not found");
 
 		} else {
 			labelRepository.delete(labelExist.get());

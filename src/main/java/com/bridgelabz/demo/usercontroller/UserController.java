@@ -3,6 +3,10 @@ package com.bridgelabz.demo.usercontroller;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bridgelabz.demo.configuration.FundooInterceptor;
 import com.bridgelabz.demo.dto.ForgetPasswordDto;
 import com.bridgelabz.demo.dto.LoginDto;
 import com.bridgelabz.demo.dto.ResetPasswordDto;
@@ -30,20 +33,15 @@ import com.bridgelabz.demo.userservice.UserService;
 public class UserController {
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	UserRepository userrepository;
-	
-	@Autowired
-	FundooInterceptor interceptor;
-	
+
+	Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@PostMapping("/add")
-	public String addTopic(@RequestBody UserDto user) throws UnsupportedEncodingException {
-		System.out.println("hey");
-		userService.addUser(user);
-		System.out.println("hey1");
-		return "added";
+	public Response addTopic(@Valid @RequestBody UserDto user) {
+		return userService.addUser(user);
 	}
 
 	@GetMapping("/get")
@@ -67,39 +65,33 @@ public class UserController {
 
 	}
 
-	
-	  @PutMapping("/update")
-	  public String update(@RequestBody UserDto userDto,@RequestParam String token) {
-		  userService.updateUser(userDto,token); 
-		  return "Updated";
-	  
-	  }
-	 
+	@PutMapping("/update")
+	public String update(@RequestBody UserDto userDto, @RequestParam String token) {
+		userService.updateUser(userDto, token);
+		return "Updated";
 
-	
-	  @PostMapping("/login") 
-	  public Response login(@RequestBody LoginDto logindto) throws UnsupportedEncodingException {
-	  return userService.login(logindto);
-	  
-	  }
-	 
+	}
 
-	
-	  @PostMapping("/forget") 
-	  public Response forgetPassword(@RequestBody ForgetPasswordDto forgetpasswordDto) throws UnsupportedEncodingException {
-	  
-	  return userService.forgetPass(forgetpasswordDto);
-	  
-	  }
-	 
+	@PostMapping("/login")
+	public Response login(@RequestBody LoginDto logindto) throws UnsupportedEncodingException {
+		log.info("inside add method");
+
+		return userService.login(logindto);
+
+	}
+
+	@PostMapping("/forget")
+	public Response forgetPassword(@RequestBody ForgetPasswordDto forgetpasswordDto)
+			throws UnsupportedEncodingException {
+
+		return userService.forgetPass(forgetpasswordDto);
+
+	}
+
 	@PostMapping("/reset")
 	public Response resetPasswor(@RequestBody ResetPasswordDto resetPasswordDto) {
 		return userService.resetPass(resetPasswordDto);
-		
-		
+
 	}
 
 }
-
-
-

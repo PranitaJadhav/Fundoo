@@ -1,14 +1,13 @@
 package com.bridgelabz.demo.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 public class User {
@@ -18,17 +17,18 @@ public class User {
 
 	private int id;
 
-	@NotNull
+	@NotEmpty(message = "Name is mandatory")
+	@Size(min = 2,message = "First name should have minimum 2 characters")
 	private String name;
 
-	@NotEmpty
+	@NotEmpty(message = "email is mandatory")
 	@Email(message = "Enter valid emailId")
 	private String emailid;
 
 	@NotNull
 	private String mobileNo;
 
-	@NotNull
+	@NotEmpty(message = "password is mandatory")
 	private String password;
 
 	@NotNull
@@ -86,4 +86,11 @@ public class User {
 		this.confirmPassword = confirmPassword;
 	}
 
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", emailid=" + emailid + ", mobileNo=" + mobileNo + ", password="
+				+ password + ", confirmPassword=" + confirmPassword + "]";
+	}
+
+	
 }

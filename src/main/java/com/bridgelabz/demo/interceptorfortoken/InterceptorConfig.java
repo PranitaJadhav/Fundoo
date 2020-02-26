@@ -1,20 +1,21 @@
-package com.bridgelabz.demo.configuration;
+package com.bridgelabz.demo.interceptorfortoken;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.bridgelabz.demo.interceptor.interceptor;
 
+@SuppressWarnings("deprecation")
 @Configuration
-public class FundooInterceptor implements WebMvcConfigurer{
+public class InterceptorConfig extends WebMvcConfigurerAdapter{
 	@Autowired
-	interceptor inter;
-	
+	Interceptor inter;
+
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		WebMvcConfigurer.super.addInterceptors(registry);
+		registry.addInterceptor(inter);
 	}
+	
 
 }

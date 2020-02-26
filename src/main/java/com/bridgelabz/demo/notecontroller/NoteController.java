@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,15 +40,18 @@ public class NoteController {
 
 	@Autowired
 	private TokenService tokenService;
+	
+
 
 	@PostMapping("/create")
-	public Response add(@RequestBody Notes notesDto, @RequestParam String token)
+	public Response add(@RequestBody Notes notesDto, @RequestHeader String token)
 			throws UnsupportedEncodingException {
 		System.out.println(token);
 
-		String t = tokenService.getUserToken(token);
-		System.out.println("t  " + t);
-		noteService.createNote(notesDto, t);
+		/*
+		 * String t = tokenService.getUserToken(token); System.out.println("t  " + t);
+		 */
+		noteService.createNote(notesDto, token);
 		return new Response(200, "Note created", null);
 
 	}
@@ -203,5 +208,24 @@ public class NoteController {
 
 		return noteService.searchByTitle(emailid,title);
 	}
+	@PutMapping("/reminder")
+	public Response reminder(@RequestHeader int nid, @RequestHeader String token,@RequestHeader String time) {
+		System.out.println(nid);
+		String emailId = tokenService.getUserToken(token);
+
+		return noteService.reminder(nid, emailId,time);
+
+
+	}
+	@PutMapping("/removeReminder")
+	public Response removeReminder(@RequestHeader int nid, @RequestHeader String token) {
+		System.out.println(nid);
+		String emailId = tokenService.getUserToken(token);
+
+		return	noteService.removeReminder(nid, emailId);
+
+
+	}
+
 
 }
