@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.demo.dto.LabelDto;
+import com.bridgelabz.demo.exception.Response;
 import com.bridgelabz.demo.model.Label;
 import com.bridgelabz.demo.noteservice.LabelService;
-import com.bridgelabz.demo.response.Response;
 import com.bridgelabz.demo.utility.TokenService;
 @RestController
 @RequestMapping("/label")

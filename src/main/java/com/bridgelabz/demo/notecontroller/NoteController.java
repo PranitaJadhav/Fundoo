@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.demo.dto.NotesDto;
+import com.bridgelabz.demo.exception.Response;
 import com.bridgelabz.demo.model.Collaborator;
 import com.bridgelabz.demo.model.Notes;
 import com.bridgelabz.demo.model.User;
 import com.bridgelabz.demo.noteservice.NoteService;
-import com.bridgelabz.demo.response.Response;
 import com.bridgelabz.demo.userservice.UserService;
 import com.bridgelabz.demo.utility.TokenService;
 
@@ -52,6 +52,7 @@ public class NoteController {
 		 * String t = tokenService.getUserToken(token); System.out.println("t  " + t);
 		 */
 		noteService.createNote(notesDto, token);
+		System.out.println(token);
 		return new Response(200, "Note created", null);
 
 	}

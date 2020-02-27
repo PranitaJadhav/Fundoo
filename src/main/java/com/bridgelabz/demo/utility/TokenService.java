@@ -29,7 +29,8 @@ public class TokenService {
 	}
 
 	
-	public String getUserToken(String token) {
+	public static String getUserToken(String token) {
+		System.out.println("in token");
 		Claim claim = JWT.require(Algorithm.HMAC256(TOKEN_SECRET)).build().verify(token).getClaim("emailid");
 
 		System.out.println("claim" + claim);

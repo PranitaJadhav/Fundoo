@@ -1,9 +1,13 @@
 package com.bridgelabz.demo.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
 import com.bridgelabz.demo.model.User;
 
 public class NotesDto {
-	
+	@NotBlank(message = "title is mandatory")
+    @Pattern(regexp = "^[a-z0-9_-]{2,20}$",message = "Enter valid title")
 	private String title;
 	private String description;
 	User userInfo;

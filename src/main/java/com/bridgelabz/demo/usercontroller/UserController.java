@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,14 +22,15 @@ import com.bridgelabz.demo.dto.ForgetPasswordDto;
 import com.bridgelabz.demo.dto.LoginDto;
 import com.bridgelabz.demo.dto.ResetPasswordDto;
 import com.bridgelabz.demo.dto.UserDto;
+import com.bridgelabz.demo.exception.Response;
 import com.bridgelabz.demo.model.User;
-import com.bridgelabz.demo.response.Response;
 import com.bridgelabz.demo.userrepository.UserRepository;
 import com.bridgelabz.demo.userservice.UserService;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
 	@Autowired
 	private UserService userService;
 
@@ -45,7 +45,6 @@ public class UserController {
 	}
 
 	@GetMapping("/get")
-	@RequestMapping(method = RequestMethod.GET, value = "/get")
 	public List<User> getUser(@RequestParam String token) {
 		System.out.println("Hii");
 		return userService.getAll(token);
@@ -66,7 +65,7 @@ public class UserController {
 	}
 
 	@PutMapping("/update")
-	public String update(@RequestBody UserDto userDto, @RequestParam String token) {
+	public String update(@Valid @RequestBody UserDto userDto, @RequestParam String token) {
 		userService.updateUser(userDto, token);
 		return "Updated";
 

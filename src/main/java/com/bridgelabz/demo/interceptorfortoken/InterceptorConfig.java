@@ -9,12 +9,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @SuppressWarnings("deprecation")
 @Configuration
 public class InterceptorConfig extends WebMvcConfigurerAdapter{
-	@Autowired
-	Interceptor inter;
+	
+	  //@Autowired Interceptor inter;
+	 
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(inter);
+		registry.addInterceptor(new Interceptor()).addPathPatterns("/notes/create");
 	}
 	
 

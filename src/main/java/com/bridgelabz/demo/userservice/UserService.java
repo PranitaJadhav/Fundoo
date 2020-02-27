@@ -15,8 +15,8 @@ import com.bridgelabz.demo.dto.ForgetPasswordDto;
 import com.bridgelabz.demo.dto.LoginDto;
 import com.bridgelabz.demo.dto.ResetPasswordDto;
 import com.bridgelabz.demo.dto.UserDto;
+import com.bridgelabz.demo.exception.Response;
 import com.bridgelabz.demo.model.User;
-import com.bridgelabz.demo.response.Response;
 import com.bridgelabz.demo.userrepository.UserRepository;
 import com.bridgelabz.demo.utility.JMS;
 import com.bridgelabz.demo.utility.TokenService;
@@ -37,7 +37,7 @@ public class UserService {
 	/*
 	 * @Autowired BCryptPasswordEncoder bycryptPasswordEncoder;
 	 */
-	List<User> user = new ArrayList<User>();
+	// List<User> user = new ArrayList<User>();
 
 	public Response addUser(UserDto userdto) {
 		User userInfo = modelMapper.map(userdto, User.class);
@@ -48,22 +48,18 @@ public class UserService {
 
 		} else {
 
-			if (userdto.getPassword().equals(userdto.getConfirmPassword())) {
+			userInfo.setPassword(userdto.getPassword());
 
-				userInfo.setPassword(userdto.getPassword());
+			String message = "Registered Successfully";
+			System.out.println(message); //
+			// jms.sendMail(userdto.getEmailid(), null,message);
 
-				String message = "Registered Successfully";
-				System.out.println(message); //
-				// jms.sendMail(userdto.getEmailid(), null,message);
+			userRepository.save(userInfo);
+			return new Response(200, "Registered", null);
 
-				userRepository.save(userInfo);
-
-			}
-			return new Response(200, "User Exist", null);
+			// String user = userExist.get().getName();
 
 		}
-
-		// return new Response(500, "Unkonwn Error", null);
 
 	}
 
@@ -91,28 +87,25 @@ public class UserService {
 
 	}
 
-	public Response login(LoginDto logindto)  throws UnsupportedEncodingException { // UserInfo userInfo = //
-		// modelMapper.map(logindto, //
-		// UserInfo.class);
-		Optional<User> user = userRepository.findByEmailid(logindto.getEmailid());
+	public Response login(LoginDto logindto) throws UnsupportedEncodingException {
+		// User user = modelMapper.map(logindto, User.class);
+		Optional<User> userExist = userRepository.findByEmailid(logindto.getEmailid());
 
-		System.out.println("user" + user);
+		// System.out.println("user" + user);
+		String userToken = null;
 
-		if (!user.isPresent()) {
-			// throw new RuntimeException("User doesnt exist");
+		if (!userExist.isPresent()) {
+			return new Response(200, "User does not Exist", null);
+
 		}
 		// if (!user.get().getPassword().equals(logindto.getPassword())) {
 
-		if (!user.get().getPassword().equals((logindto.getPassword()))) {
+		if (!userExist.get().getPassword().equals((logindto.getPassword()))) {
 
-			// throw new RuntimeException("Password mismatch");
+			userToken = tokenService.createToken(userExist.get().getEmailid());
 
 		}
 
-		String userToken;
-		
-			userToken = tokenService.createToken(user.get().getEmailid());
-		
 		// System.out.println(userToken);
 		// jms.sendMail(logindto.getEmailid(), userToken,"welcome");
 
@@ -175,5 +168,5 @@ public class UserService {
 		}
 
 	}
-	
+
 }

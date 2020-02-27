@@ -13,6 +13,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -28,7 +29,7 @@ public class Label   {
 	private LocalDateTime modified_time;
 
 	@NotEmpty(message = "field required")
-	//@Column(name = "label_name")
+    @Pattern(regexp = "^[a-z0-9_-]{2,20}$",message = "Enter valid label")
 	private String label_name;
 
 	@ManyToOne

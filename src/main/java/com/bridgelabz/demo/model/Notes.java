@@ -15,7 +15,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
+import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -28,6 +28,7 @@ public class Notes {
 	private int nid;
 
 	@NotBlank(message = "title is mandatory")
+    @Pattern(regexp = "^[a-z0-9_-]{2,20}$",message = "Enter valid title")
 	private String title;
 
 	private String description;

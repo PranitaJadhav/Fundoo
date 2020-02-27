@@ -6,21 +6,29 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.catalina.connector.Request;
 import org.modelmapper.ModelMapper;
+import org.omg.PortableInterceptor.RequestInfo;
+import org.omg.PortableInterceptor.RequestInfoOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.servlet.resource.HttpResource;
 
 import com.bridgelabz.demo.dto.NotesDto;
+import com.bridgelabz.demo.exception.Response;
 import com.bridgelabz.demo.exception.UserNotPresent;
+import com.bridgelabz.demo.interceptorfortoken.Interceptor;
 import com.bridgelabz.demo.labelrepository.CollaboratorRepository;
 import com.bridgelabz.demo.model.Collaborator;
 import com.bridgelabz.demo.model.Notes;
 import com.bridgelabz.demo.model.User;
 import com.bridgelabz.demo.notesrepository.NotesRepository;
-import com.bridgelabz.demo.response.Response;
 import com.bridgelabz.demo.userrepository.UserRepository;
 import com.bridgelabz.demo.utility.JMS;
 import com.bridgelabz.demo.utility.TokenService;
@@ -41,6 +49,7 @@ public class NoteService {
 	ModelMapper modelMapper;
 
 	@Autowired
+	static
 	TokenService tokenService;
 	@Autowired
 	Notes notes;
@@ -52,30 +61,29 @@ public class NoteService {
 
 	@Autowired
 	CollaboratorRepository collaboratorRepository;
-	
 
-
-	Logger log	=	LoggerFactory.getLogger(this.getClass());
-
+	@Autowired
+	Interceptor interceptor;
 	public Response createNote(Notes notesDto, String token) {
+		//Logger log = LoggerFactory.getLogger(this.getClass());
+
 
 		Notes notes = modelMapper.map(notesDto, Notes.class);
 		System.out.println(token);
-
-		//log.getClass().
-
-			if (!(notesDto.getTitle().isEmpty()) && (!notesDto.getDescription().isEmpty())) {
-				System.out.println("in if");
-				Optional<User> user = userRepository.findByEmailid(token);
-
-				notes.setUser(user.get());
-				notes.setCreatelabel_time(LocalDateTime.now());
-				notesRepository.save(notes);
-				System.out.println("save");
-				return new Response(200, "note created", null);
-			}
-
+		//inte.toString();
+	
+		//Request.this.getAttribute(token);
 		
+		if (!(notesDto.getTitle().isEmpty()) && (!notesDto.getDescription().isEmpty())) {
+			Optional<User> user = userRepository.findByEmailid(token);
+
+			notes.setUser(user.get());
+			notes.setCreatelabel_time(LocalDateTime.now());
+			notesRepository.save(notes);
+			System.out.println("save");
+			return new Response(200, "note created", null);
+		}
+
 		return new Response(500, "null value", null);
 		// return " not created";
 	}
@@ -99,86 +107,107 @@ public class NoteService {
 		Optional<User> userExist = userRepository.findByEmailid(token);
 		int id = userExist.get().getId();
 		System.out.println(id);
-		List<Notes> noteList = notesRepository.findAll();
+		
 
-		List<Notes> noteList2 = noteList.stream().filter(i -> (i.getUser().getEmailid()).equals((token)))
-				.collect(Collectors.toList());
+		if (userExist.isPresent()) {
+			List<Notes> noteList = notesRepository.findAll();
 
-		if (!userExist.isPresent())
-			throw new UserNotPresent("User Doesnt exist");
-		else
+			List<Notes> noteList2 = noteList.stream().filter(i -> (i.getUser().getEmailid()).equals((token)))
+					.collect(Collectors.toList());
 			return noteList2;
+		}
+		else {
+			return null;
+		}
+			
 
 	}
 
-	public void updateNote(NotesDto noteDto, int id, String token) {
+	public Response updateNote(NotesDto noteDto, int id, String token) {
 		System.out.println(token);
 		Optional<Notes> note = notesRepository.findByNid(id);
 		System.out.println(note.get());
 		Optional<User> user = userRepository.findByEmailid(token);
+		if (!user.isPresent()) {
+			return new Response(200, "User not present", null);
 
-		if (user.isPresent()) {
-			if (note.isPresent()) {
+		} else if (!note.isPresent()) {
+			return new Response(200, "note not present", null);
+
+		}
+
+		else {
 
 				note.get().setTitle(noteDto.getTitle());
 				note.get().setDescription(noteDto.getDescription());
 				note.get().setModified_time(LocalDateTime.now());
 				notesRepository.save(note.get());
+				return new Response(200, "note updated", null);
+
 
 			}
 		}
 
-	}
+	
 
-	public void trashNote(int id, String emailId) {
+	public Response trashNote(int id, String emailId) {
 		System.out.println(emailId);
 		Optional<Notes> note = notesRepository.findByNid(id);
 		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
-			throw new UserNotPresent(environment.getProperty("null value found"));
+			return new Response(200, "User not present", null);
 
 		} else if (!note.isPresent()) {
-			throw new UserNotPresent(environment.getProperty("null value found"));
+			return new Response(200, "note not present", null);
 
 		}
 
 		else {
 			if (note.get().isPin()) {
 				note.get().setPin(false);
+				return new Response(200, "note trashed", null);
+
 
 			}
 
 			note.get().setTrash(true);
 			note.get().setModified_time(LocalDateTime.now());
 			notesRepository.save(note.get());
+			return new Response(200, "note trashed", null);
+
 
 		}
 
 	}
 
-	public void unTrashNote(int id, String emailId) {
+	public Response unTrashNote(int id, String emailId) {
 		System.out.println(emailId);
 		Optional<Notes> note = notesRepository.findByNid(id);
 		Optional<User> user = userRepository.findByEmailid(emailId);
 
 		if (!user.isPresent()) {
-			throw new UserNotPresent(environment.getProperty("null value found"));
+			return new Response(200, "user not prsent", null);
 
 		} else if (!note.isPresent()) {
-			throw new UserNotPresent(environment.getProperty("null value found"));
+			return new Response(200, "note trashed", null);
 
 		} else if (note.get().isTrash()) {
 
 			note.get().setTrash(false);
 			note.get().setModified_time(LocalDateTime.now());
 			notesRepository.save(note.get());
+			return new Response(200, "note untrashed", null);
+
+			
 		}
+		return null;
 	}
 
 	public List<Notes> getTrash(String emailid) {
 		Optional<User> user = userRepository.findByEmailid(emailid);
 		int id = user.get().getId();
+		if (user.isPresent()) {
 		List<Notes> notes = notesRepository.findByUserId(id);
 		List<Notes> notesList = notes.stream().filter(i -> i.isTrash()).collect(Collectors.toList());
 		/*
@@ -187,25 +216,29 @@ public class NoteService {
 		 */
 
 		return notesList;
+		}
+		return null;
 	}
 
-	public void deleteTrash(int nid, String emailid) {
+	public Response deleteTrash(int nid, String emailid) {
 		Optional<Notes> note = notesRepository.findByNid(nid);
 		System.out.println(note);
 		Optional<User> user = userRepository.findByEmailid(emailid);
 
 		if (!user.isPresent()) {
-			throw new UserNotPresent(environment.getProperty("null value found"));
+			return new Response(200, "User not Present", null);
 
 		} else if (!note.isPresent()) {
-			throw new UserNotPresent(environment.getProperty("null value found"));
+			return new Response(200, "note not present", null);
 
 		} else if (!note.get().isTrash()) {
-			throw new UserNotPresent(environment.getProperty("Not present in trash"));
+			return new Response(200, "note is not present in trashed", null);
 
 		} else {
 			notesRepository.delete(note.get());
 			notesRepository.save(note.get());
+			return new Response(200, "Deleted", null);
+
 
 		}
 
@@ -463,11 +496,11 @@ public class NoteService {
 	 * 
 	 * return "collaborate"; }
 	 */
+
 	
-	  public String tokenReturn(String token) { return
-	  tokenService.getUserToken(token);
-	  
-	  
+	  public static  String tokenReturn(String token) { 
+		  return tokenService.getUserToken(token);
+		  //return "pre";
 	  
 	  }
 	 
