@@ -38,9 +38,17 @@ public class LabelService implements LabelInterface {
 	@Autowired
 	NotesRepository noteRepository;
 
+	public Optional<User> check(String emaiId) {
+		System.out.println("list" + userRepository.findAll().get(0).toString());
+		Optional<User> user = userRepository.findById(1);
+		return user;
+
+	}
+
 	@Override
 	public String createLabel(LabelDto labelDto, String token) {
 		String t = tokenService.getUserToken(token);
+		System.out.println(t);
 		Label label = modelMapper.map(labelDto, Label.class);
 		Optional<User> user = userRepository.findByEmailid(t);
 		if (!user.isPresent()) {
@@ -72,13 +80,13 @@ public class LabelService implements LabelInterface {
 		String UserEmailid = tokenService.getUserToken(token);
 		System.out.println(UserEmailid);
 		Optional<User> userExist = userRepository.findByEmailid(UserEmailid);
-		//int id = userExist.get().getId();
+		// int id = userExist.get().getId();
 		Optional<Notes> noteExist = noteRepository.findByNid(noteId);
 		Optional<Label> labelExist = labelRepository.findByLabelId(labelId);
 		if (!userExist.isPresent()) {
 
-			//throw new RuntimeException("User doesnt exist");
-			
+			// throw new RuntimeException("User doesnt exist");
+
 		} else if (!noteExist.isPresent()) {
 			throw new RuntimeException("Note is not present");
 

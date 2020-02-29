@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.bridgelabz.demo.interceptorfortoken.Interceptor;
+import com.bridgelabz.demo.interceptorfortoken.RepositoryAccessClass;
 import com.bridgelabz.demo.model.Notes;
 import com.bridgelabz.demo.model.User;
 
@@ -33,6 +33,7 @@ public class Config {
 		return new Notes();
 
 	}
+	
 	
 	/*
 	 * public Interceptor getInt() { return new Interceptor();

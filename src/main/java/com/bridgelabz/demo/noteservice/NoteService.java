@@ -23,7 +23,6 @@ import org.springframework.web.servlet.resource.HttpResource;
 import com.bridgelabz.demo.dto.NotesDto;
 import com.bridgelabz.demo.exception.Response;
 import com.bridgelabz.demo.exception.UserNotPresent;
-import com.bridgelabz.demo.interceptorfortoken.Interceptor;
 import com.bridgelabz.demo.labelrepository.CollaboratorRepository;
 import com.bridgelabz.demo.model.Collaborator;
 import com.bridgelabz.demo.model.Notes;
@@ -62,8 +61,9 @@ public class NoteService {
 	@Autowired
 	CollaboratorRepository collaboratorRepository;
 
-	@Autowired
-	Interceptor interceptor;
+	/*
+	 * @Autowired Interceptor interceptor;
+	 */
 	public Response createNote(Notes notesDto, String token) {
 		//Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -498,11 +498,12 @@ public class NoteService {
 	 */
 
 	
-	  public static  String tokenReturn(String token) { 
-		  return tokenService.getUserToken(token);
-		  //return "pre";
+	
+	  public static String tokenReturn(String token) { return
+	  tokenService.getUserToken(token); //return "pre";
 	  
 	  }
+	  
 	 
 
 }

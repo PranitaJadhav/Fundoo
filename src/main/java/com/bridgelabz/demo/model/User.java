@@ -37,6 +37,8 @@ public class User {
 
 	@NotNull
 	private String confirmPassword;
+	
+	private String image;
 
 	public User() {
 		super();
@@ -90,11 +92,22 @@ public class User {
 		this.confirmPassword = confirmPassword;
 	}
 
+	
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", emailid=" + emailid + ", mobileNo=" + mobileNo + ", password="
-				+ password + ", confirmPassword=" + confirmPassword + "]";
+				+ password + ", confirmPassword=" + confirmPassword + ", image=" + image + "]";
 	}
+
+	
 
 	
 }

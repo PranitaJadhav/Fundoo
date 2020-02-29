@@ -1,15 +1,20 @@
 package com.bridgelabz.demo.userservice;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+//import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.spel.ast.OpOr;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.demo.dto.ForgetPasswordDto;
 import com.bridgelabz.demo.dto.LoginDto;
@@ -20,6 +25,8 @@ import com.bridgelabz.demo.model.User;
 import com.bridgelabz.demo.userrepository.UserRepository;
 import com.bridgelabz.demo.utility.JMS;
 import com.bridgelabz.demo.utility.TokenService;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 
 @Service
 public class UserService {
@@ -64,8 +71,8 @@ public class UserService {
 	}
 
 	public List<User> getAll(String token) {
-		String tok = tokenService.getUserToken(token);
-		Optional<User> userExist = userRepository.findByEmailid(tok);
+		String emailID = tokenService.getUserToken(token);
+		Optional<User> userExist = userRepository.findByEmailid(emailID);
 
 		if (!userExist.isPresent()) {
 			throw new RuntimeException("User doesnt exist");
@@ -100,7 +107,7 @@ public class UserService {
 		}
 		// if (!user.get().getPassword().equals(logindto.getPassword())) {
 
-		if (!userExist.get().getPassword().equals((logindto.getPassword()))) {
+		if (userExist.get().getPassword().equals((logindto.getPassword()))) {
 
 			userToken = tokenService.createToken(userExist.get().getEmailid());
 
@@ -166,6 +173,59 @@ public class UserService {
 			user.get().setName(userDto.getName());
 			userRepository.save(user.get());
 		}
+
+	}
+
+	/*
+	 * public Response uplaodImage(String token, Multipart file) { String emailid =
+	 * tokenService.getUserToken(token); Optional<User> user =
+	 * userRepository.findByEmailid(emailid); if (user.isPresent()) { UUID uuid =
+	 * UUID.randomUUID(); String uniqueId = uuid.toString();
+	 * //Files.copy(file.getParent().getInputStream(), path.r, options); }
+	 * 
+	 * return null; }
+	 * 
+	 * public Response getImage(String token) { return null; }
+	 */
+
+	/*
+	 * public Response uplaodImage(String token, MultipartFile file) throws
+	 * IOException { String emailid = tokenService.getUserToken(token);
+	 * Optional<User> user = userRepository.findByEmailid(emailid); if
+	 * (!user.isPresent()) { return new Response(200, "User does not Exist", null);
+	 * 
+	 * } File uploadFile = new File(file.getOriginalFilename());
+	 * BufferedOutputStream outPutStream = new BufferedOutputStream(new
+	 * FileOutputStream(uploadFile));
+	 * 
+	 * outPutStream.write(file.getBytes()); Cloudinary cloudinary = new
+	 * Cloudinary(ObjectUtils.asMap(values)); }
+	 */
+
+	public Response uploadProPic(String token, MultipartFile file) throws IOException {
+		String emailid = tokenService.getUserToken(token);
+		Optional<User> user = userRepository.findByEmailid(emailid);
+		if (user.isPresent()) {
+			System.out.println("hey");
+			File uploadFile = new File(file.getOriginalFilename());
+			System.out.println(uploadFile);
+			BufferedOutputStream outStream = new BufferedOutputStream(new FileOutputStream(uploadFile));
+			outStream.write(file.getBytes());
+			outStream.close();
+			Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap("cloud_name", "yelloracaves", "api_key",
+					"982216137489194", "api_secret", "rsDRuXLXg5n1HTZstmcckBxoOxY"));
+			System.out.println(ObjectUtils.emptyMap());
+			Map<?, ?> uploadProfile;
+			//uploadProfile = cloudinary.uploader().upload(uploadFile, ObjectUtils.emptyMap());
+			uploadProfile = cloudinary.uploader().upload(uploadFile, ObjectUtils.emptyMap());
+			
+
+			user.get().setImage(uploadProfile.get("secure_url").toString());
+			userRepository.save(user.get());
+			return new Response(200, "imageUploaded successfully", null);
+                                                                                                                                                                                                                                                                                                                                                                                                                                    
+		}
+		return null;
 
 	}
 

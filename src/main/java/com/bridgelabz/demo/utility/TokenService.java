@@ -29,7 +29,7 @@ public class TokenService {
 	}
 
 	
-	public static String getUserToken(String token) {
+	public String getUserToken(String token) {
 		System.out.println("in token");
 		Claim claim = JWT.require(Algorithm.HMAC256(TOKEN_SECRET)).build().verify(token).getClaim("emailid");
 
@@ -37,6 +37,9 @@ public class TokenService {
 		return claim.asString();
 
 	}
+
+
+	
 	 
 
 	
